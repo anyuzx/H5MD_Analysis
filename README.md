@@ -13,8 +13,11 @@ $$F_{s}(k,\tau) = \frac{1}{N}\Bigg\langle \sum_{i=1}^{N}e^{i\mathbf{k}\cdot[\mat
 The main program is `LammpsH5MD.py`. It defines the class `LammpsH5MD` which is used to read and process H5MD file. It has several class members.
 
 * `LammpsH5MD.load(fname)`
+
 > Load trajectory file
+
 > **Parameter**: fname: path of H5MD file
+
 > **Return**: None
 * `LammpsH5MD.get_framenumber()`
 > Get the total number of frames stored in trajectory
