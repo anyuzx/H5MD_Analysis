@@ -2,6 +2,8 @@
 
 This module is used for analyzing LAMMPS H5MD format dump trajectory file. The valid trajectory file can be analyzed must contains position or velocity hdf5 group. And the path of the group is accessed through `['particles/all/position]`. The module right now can calculate **Mean Square Displacement** and **Intermediate Scattering Function**. However custom function can be easily defined as integrated into this module, as long as the it's function of configuration of position of particles at time $t$ and time $t+\tau$. And one is only interested in the average of quantity depends on $\tau$. For instance, **Mean Square Displacement** is one of the examples
 
+![equation](http://www.sciweavers.org/upload/Tex2Img_1460784338/render.png)
+
 $$g(\tau)=\frac{1}{N}\Bigg\langle \sum_{i=1}^{N}(\mathbf{r}_{i}(t+\tau) - \mathbf{r}_{i}(t))^{2}  \Bigg\rangle$$
 
 The other example is **Intermediate Scattering Function**
