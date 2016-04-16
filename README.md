@@ -19,28 +19,51 @@ The main program is `LammpsH5MD.py`. It defines the class `LammpsH5MD` which is 
 > **Parameter**: fname: path of H5MD file
 
 > **Return**: None
+
 * `LammpsH5MD.get_framenumber()`
+
 > Get the total number of frames stored in trajectory
+
 > **Parameter**: None.
+
 > **Return**: None. The value is stored in LammpsH5MD.frame_number
+
 * `LammpsH5MD.get_frame(i)`
+
 > Give the position of particles of ith frame
+
 > **Parameter**: i: int type. E.g i=0 means the first frame
+
 > **Return**: position_array: [N, 3] array of particle position of ith frame.
+
 * `LammpsH5MD.cal_correlate(func_lst, t0freq, dtnumber=100, start=0, end=None, align=False, mode='log', size=[1])`
+
 > Calculate the correlation quantity defined in `func_lst`.
+
 > **Parameter**: func_lst: python list
+
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t0freq: take initial timestep every t0freq frames
+
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dtnumber: total number of time interval calculated
+
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; start: start frame subject to calculation
+
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end: end frame subject to calculation. Default value: None. The last frame of file.
+
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; align: enable/disable trajectory alignment
+
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mode: the method used to distribute the dt. Default value: log
+
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; size: size of quantity calculated. Each element of array specify the number of each function in func_lst. type: list/array.
+
 > **Return**: python list of each quantity numpy array calculated by each function in func_lst. The first column of each quantity array is the dt array.
+
 * `LammpsH5MD.info()`
+
 > Print out the avaiable information about the loaded file
+
 > **Parameter**: None
+
 > **Return**: None
 
 ## Tutorial
