@@ -140,7 +140,7 @@ COMPUTE:
             wave_vector: 4.0
             class_number: 26
 WRITE:
-    - isf_k4.0.txt
+    - isf_k4.0.txt:
         id: 2
     - g1.txt:
         id: 1

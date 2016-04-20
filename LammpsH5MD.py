@@ -38,6 +38,53 @@ def optimal_rotate(P,Q):
     return np.array(P * U + Qc)
 # =====================================================================
 
+# =====================================================================
+# TEST TEST TEST
+class OnlineVariance1:
+    """
+    Welford's algorithm to computes the sample mean, variance in a stream
+    """
+
+    def __init__(self, dim):
+        if dim == 1:
+            self.mean, self.var, self.S = 0,0,0
+        else:
+            self.mean, self.var, self.S = np.zeros(dim), np.zeros(dim), np.zeros(dim)
+        self.n = 0
+
+    def stream(self, data_point):
+        self.n += 1
+        self.delta = data_point - self.mean
+        self.mean += self.delta / float(self.n)
+        self.S += self.delta * (data_point - self.mean)
+        if self.n > 1:
+            self.var = self.S / (self.n - 1)
+
+    def stat(self):
+        return self.mean, self.var
+
+class OnlineVariance2:
+
+    def __init__(self, dim):
+        if dim == 1:
+            self.mean, self.var, self.sumx, self.sumx2 = 0,0,0,0
+        else:
+            self.mean, self.var, self.sumx, self.sumx2 = np.zeros(dim), np.zeros(dim), np.zeros(dim), np.zeros(dim)
+        self.n = 0
+
+    def stream(self, data_point):
+        self.n += 1
+        self.sumx += data_point
+        self.sumx2 += np.power(data_point, 2.0)
+
+    def stat(self):
+        self.mean = self.sumx / self.n
+        self.var = (self.sumx2 - np.power(self.sumx, 2.0) / float(self.n)) / float(self.n)
+        #self.var = self.sumx2 / self.n - (self.mean)**2.0
+        return self.mean, self.var
+# TEST TEST TEST
+# =====================================================================
+
 class LammpsH5MD:
     def __init__(self):
         self.file = self.filename = None
@@ -61,7 +108,7 @@ class LammpsH5MD:
         return self.file['particles']['all']['position']['value'][t]
 
     def cal_correlate(self, func_lst, t0freq=10, dtnumber=100, start=0, end=None,
-                      align=False, mode='log', size=[1]):
+                      align=False, mode='log', size=[1], variance=False):
         # explain each argument:
         #   func_lst: list of functions to calculate the quantity.
         #       can specify multiple functions. E.g [msd,isf]
@@ -78,6 +125,8 @@ class LammpsH5MD:
         #   size: size of quantity calculated. type:array
         #       each element of array specify the number for each function in
         #       func_lst
+        #   variance: enable/disable variance storing. If enabled, both \sum_{i}x_{i}
+        #       and \sum_{i}x_{i}^2 are stored.
         #
         #   return: quantity list calculated. the order of list is the same as
         #       the func_lst. The firt column of each quantity array is the
@@ -117,8 +166,12 @@ class LammpsH5MD:
         # E.g corr = {msd: np.zeros((100,1))
         #             isf: np.zeros((100,1))}
         corr = {}
-        for f, s in zip(func_lst,size):
+        if variance:
+            corr_square = {}
+        for f, s in zip(func_lst, size):
             corr[f] = np.zeros((len(dt_lst), s))
+            if variance:
+                corr_square[f] = np.zeros((len(dt_lst), s))
 
         # create a array storing the number of quantity calcualted
         # used for the average
@@ -141,15 +194,25 @@ class LammpsH5MD:
                 for func in func_lst:
                     corr_temp = func(frame_t1, frame_t2) # t1 > t2
                     corr[func][index] += corr_temp
+                    if variance:
+                        corr_square[func][index] += np.power(corr_temp, 2.0)
                 corr_count[index] += 1
 
         t_end = time.time()
         t_cost = t_end - t_start
         sys.stdout.write('\nTotal time cost: {:.2f} mins\n'.format(t_cost/60.0))
         corr_lst = []
+        if variance:
+            corr_variance_lst = []
         for key in corr:
             corr_lst.append(np.hstack((dt_lst.reshape((len(dt_lst), 1)), corr[key]/corr_count)))
-        return corr_lst
+            if variance:
+                corr_variance_lst.append(np.hstack((dt_lst.reshape((len(dt_lst), 1)), \
+                corr_square[key]/corr_count - np.power(corr[key]/corr_count, 2.0))))
+        if variance:
+            return corr_lst, corr_variance_lst
+        else:
+            return corr_lst
 
     def info(self):
         sys.stdout.write('File Loaded: {}\n'.format(self.filename))

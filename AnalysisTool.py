@@ -4,6 +4,7 @@ import msd
 import isf
 import sys
 import yaml
+import datetime
 
 # ===================================================================
 # define a dictionary for function name look up
@@ -55,11 +56,25 @@ traj = LammpsH5MD.LammpsH5MD()    # create LammpsH5MD class
 traj.load(finname)     # load the trajectory
 
 # do the calculation
-result = traj.cal_correlate(func_dic.values(), **kwargs)
+if 'variance' in kwargs and kwargs['variance']:
+    mean, variance = traj.cal_correlate(func_dic.values(), **kwargs)
+else:
+    mean = traj.cal_correlate(func_dic.values(), **kwargs)
 
 output_name_lst = []
 for key in func_dic.keys():
     output_name_lst.append(write_dic[key])
 
-for index, quantity in enumerate(result):
-    np.savetxt(output_name_lst[index], quantity, delimiter='   ')
+if 'variance' in kwargs and kwargs['variance']:
+    for index, quantity in enumerate(zip(mean,variance)):
+        quantity = np.hstack((quantity[0], quantity[1][:,1:]))
+        with open(output_name_lst[index], 'w') as f:
+            f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
+            f.write('# frames, mean, variance\n')
+            np.savetxt(f, quantity, delimiter='    ')
+else:
+    for index, quantity in enumerate(mean):
+        with open(output_name_lst[index], 'w') as f:
+            f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
+            f.write('# frames, mean\n')
+            np.savetxt(f, quantity, delimiter='    ')
