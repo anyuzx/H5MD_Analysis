@@ -145,7 +145,7 @@ LammpsH5MD.cal_twotime([msd.msd, isf.isf(4.0,26)], t0freq=10, dtnumber = 200, st
 We can use a parameter file to parse the arguments to `LammpsH5MD`. The parameter file use `YAML` syntax. For instance:
 
 ```
-FILENAME: my_test_h5md.h5
+FILE: my_test_h5md.h5
 COMPUTE:
     - msd.g1:
         id: 1
@@ -179,7 +179,7 @@ ARGS_ONETIME:
 ```
 
 #### Keywords
-* `FILENAME`: Specify the path to the trajectory file
+* `FILE`: Specify the path to the trajectory file
 * `COMPUTE`: Specify the quantity computed. Give the name of function and arguments if necessary. Also assign a unique ID to each compute.
 * `WRITE`: Specify the name of output file you want to use. ID corresponds to the `COMPUTE`.
 * `ARGS_TWOTIME`: Specify the arguments parsed to `LammpsH5MD.cal_twotime`. See above.
