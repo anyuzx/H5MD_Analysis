@@ -39,7 +39,7 @@ def read_parameter(script):
     global onetime_flag
 
     for key, value in script.iteritems():
-        if key == 'FILENAME':
+        if key == 'FILE':
             finname = value
         elif key == 'COMPUTE':
             func_name_lookup = {}

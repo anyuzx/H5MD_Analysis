@@ -1,4 +1,4 @@
-FILENAME: /Users/gs27722/Desktop/Chr5_145870001_157870001_SC/model_2/Chr5_145870001_157870001_G2.5_SC_1_short_traj.h5
+FILE: /Users/gs27722/Desktop/Chr5_145870001_157870001_SC/model_2/Chr5_145870001_157870001_G2.5_SC_1_short_traj.h5
 COMPUTE:
     - isf:
         id: 1
