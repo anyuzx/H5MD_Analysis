@@ -115,29 +115,27 @@ traj.load(finname)     # load the trajectory
 # two-time quantity calculation
 if twotime_flag == 1:
     twotime_data_dic = traj.cal_twotime(twofunc_dic.values(), **twotime_kwargs)
+    twotime_output_name_lst = []
+    for key in twofunc_dic.keys():
+        twotime_output_name_lst.append(write_dic[key])
+    for key in write_dic:
+        if func_name_lookup[key] in twotime_func_name_lst:
+            with open(write_dic[key], 'w') as f:
+                f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
+                f.write('t0 t1 {}\n'.format(func_name_lookup[key]))
+                np.savetxt(f, twotime_data_dic[twofunc_dic[key]], delimiter=' ')
+
+
 # one-time quantity calculation
 if onetime_flag == 1:
     onetime_data_dic = traj.cal_onetime(onefunc_dic.values(), **onetime_kwargs)
-
-
-# write data on files
-# two cases: two-time quantity and one-time quantity
-twotime_output_name_lst = []
-onetime_output_name_lst = []
-for key in twofunc_dic.keys():
-    twotime_output_name_lst.append(write_dic[key])
-for key in onefunc_dic.keys():
     onetime_output_name_lst.append(write_dic[key])
-
-for key in write_dic:
-    if func_name_lookup[key] in twotime_func_name_lst:
-        with open(write_dic[key], 'w') as f:
-            f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
-            f.write('t0 t1 {}\n'.format(func_name_lookup[key]))
-            np.savetxt(f, twotime_data_dic[twofunc_dic[key]], delimiter=' ')
-    elif func_name_lookup[key] in onetime_func_name_lst:
-        with open(write_dic[key], 'w') as f:
-            #f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
-            #f.write('QUANTITY: {}\n'.format(func_name_lookup[key]))
-            #np.savetxt(f, onetime_data_dic[onefunc_dic[key]], delimiter=' ')
-            np.save(f, onetime_data_dic[onefunc_dic[key]])
+    for key in onefunc_dic.keys():
+        onetime_output_name_lst.append(write_dic[key])
+    for key in write_dic:
+        if func_name_lookup[key] in onetime_func_name_lst:
+            with open(write_dic[key], 'w') as f:
+                #f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
+                #f.write('QUANTITY: {}\n'.format(func_name_lookup[key]))
+                #np.savetxt(f, onetime_data_dic[onefunc_dic[key]], delimiter=' ')
+                np.save(f, onetime_data_dic[onefunc_dic[key]])
