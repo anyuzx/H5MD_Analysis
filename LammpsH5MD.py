@@ -39,50 +39,24 @@ def optimal_rotate(P,Q):
 # =====================================================================
 
 # =====================================================================
-# TEST TEST TEST
-class OnlineVariance1:
+# funtion used to calculate mean and variance one-pass algorithm
+class OnlineVariance:
     """
     Welford's algorithm to computes the sample mean, variance in a stream
     """
 
-    def __init__(self, dim):
-        if dim == 1:
-            self.mean, self.var, self.S = 0,0,0
-        else:
-            self.mean, self.var, self.S = np.zeros(dim), np.zeros(dim), np.zeros(dim)
-        self.n = 0
+    def __init__(self, dim, length):
+        self.mean, self.var, self.S = np.zeros((length, dim)), np.zeros((length, dim)), np.zeros((length, dim))
+        self.n = np.zeros(length)
 
-    def stream(self, data_point):
-        self.n += 1
-        self.delta = data_point - self.mean
-        self.mean += self.delta / float(self.n)
-        self.S += self.delta * (data_point - self.mean)
-        if self.n > 1:
-            self.var = self.S / (self.n - 1)
+    def stream(self, data_point, position):
+        self.n[position] += 1.0
+        self.delta = data_point - self.mean[position]
+        self.mean[position] += self.delta / float(self.n[position])
+        self.S[position] += self.delta * (data_point - self.mean[position])
+        self.var[position] = self.S[position] / (self.n[position] - 1.0)
 
-    def stat(self):
         return self.mean, self.var
-
-class OnlineVariance2:
-
-    def __init__(self, dim):
-        if dim == 1:
-            self.mean, self.var, self.sumx, self.sumx2 = 0,0,0,0
-        else:
-            self.mean, self.var, self.sumx, self.sumx2 = np.zeros(dim), np.zeros(dim), np.zeros(dim), np.zeros(dim)
-        self.n = 0
-
-    def stream(self, data_point):
-        self.n += 1
-        self.sumx += data_point
-        self.sumx2 += np.power(data_point, 2.0)
-
-    def stat(self):
-        self.mean = self.sumx / self.n
-        self.var = (self.sumx2 - np.power(self.sumx, 2.0) / float(self.n)) / float(self.n)
-        #self.var = self.sumx2 / self.n - (self.mean)**2.0
-        return self.mean, self.var
-# TEST TEST TEST
 # =====================================================================
 
 class LammpsH5MD:
@@ -91,6 +65,7 @@ class LammpsH5MD:
         self.frame_number = None
 
     def load(self, finname):
+        # load the trajectory
         try:
             self.filename = finname
             self.file = h5py.File(finname, 'r')
@@ -98,6 +73,7 @@ class LammpsH5MD:
             raise
 
     def get_framenumber(self):
+        # get the total number of snapshots stored in file
         try:
             self.frame_number = self.file['particles']['all']['position']\
                                          ['step'][:].shape[0]
@@ -105,10 +81,14 @@ class LammpsH5MD:
             raise
 
     def get_frame(self,t):
+        # get the frame provided the index of snapshot
         return self.file['particles']['all']['position']['value'][t]
 
-    def cal_correlate(self, func_lst, t0freq=10, dtnumber=100, start=0, end=None,
-                      align=False, mode='log', size=[1], variance=False):
+    def cal_twotime(self, func_lst, t0freq=10, dtnumber=100, start=0, end=None,
+                      align=False, mode='log'):
+        # This method calculate any two-time quantity. Like MSD, ISF ...
+        # And return the full list of data
+        #
         # explain each argument:
         #   func_lst: list of functions to calculate the quantity.
         #       can specify multiple functions. E.g [msd,isf]
@@ -118,19 +98,15 @@ class LammpsH5MD:
         #   start: the index of first frame you want to analyze. Default value=0
         #   end: the index of last frame you want to analyze. Default value:
         #                                                     last frame of file
-        #   align: enable/disable the trajectory alignment
+        #   align: enable/disable the trajectory alignment. If enable, specify the
+        #           index of reference snapshot. Ex. align=0. Default value: False
+        #
         #   mode: specify the method to distribute the dt. Default value: log
         #       log: make the dt list logrithm
-        #       linear: linear distributed
-        #   size: size of quantity calculated. type:array
-        #       each element of array specify the number for each function in
-        #       func_lst
-        #   variance: enable/disable variance storing. If enabled, both \sum_{i}x_{i}
-        #       and \sum_{i}x_{i}^2 are stored.
+        #       linear: linear distributedt
         #
         #   return: quantity list calculated. the order of list is the same as
-        #       the func_lst. The firt column of each quantity array is the
-        #       delta t array.
+        #       the func_lst.
 
         # all get_timesteps() if no self.frame_number
         if not self.frame_number:
@@ -146,8 +122,6 @@ class LammpsH5MD:
         assert type(start) == int
         if type(func_lst) != list:
             func_lst = [func_lst]
-        assert len(func_lst) == len(size)
-        for item in size: assert type(item) == int
 
         # create the initial time array.
         t0_lst = np.arange(start, end, t0freq)
@@ -161,29 +135,26 @@ class LammpsH5MD:
         else:
             raise ValueError("Error: value of argument 'mode' not recognized...\n")
 
+
         # start the calculation
         # initialize the quantity dictionary
-        # E.g corr = {msd: np.zeros((100,1))
-        #             isf: np.zeros((100,1))}
-        corr = {}
-        if variance:
-            corr_square = {}
-        for f, s in zip(func_lst, size):
-            corr[f] = np.zeros((len(dt_lst), s))
-            if variance:
-                corr_square[f] = np.zeros((len(dt_lst), s))
+        # E.g corr = {msd: []
+        #             isf: []}
+        twotime = {}
 
-        # create a array storing the number of quantity calcualted
-        # used for the average
-        corr_count = np.zeros((len(dt_lst), 1))
+        for f in func_lst:
+            twotime[f] = []
+
         # initial configuration. used for alignment if enabled
-        frame_start = self.file['particles']['all']['position']['value'][start]
+        if align is not False:
+            frame_start = self.file['particles']['all']['position']['value'][align]
         t_start = time.time()
+
         for t0 in t0_lst:
-            sys.stdout.write('\rInitial time {} analyzed.'.format(t0))
+            sys.stdout.write('Initial time {} analyzed.\n'.format(t0))
             sys.stdout.flush()
             for index, dt in enumerate(dt_lst[np.where(dt_lst <= (end-t0-1))]):
-                if align:
+                if align is not False:
                     frame_t1 = self.get_frame(t0+dt)
                     frame_t2 = self.get_frame(t0)
                     frame_t1 = optimal_rotate(frame_t1, frame_start)
@@ -192,27 +163,116 @@ class LammpsH5MD:
                     frame_t1 = self.get_frame(t0+dt)
                     frame_t2 = self.get_frame(t0)
                 for func in func_lst:
-                    corr_temp = func(frame_t1, frame_t2) # t1 > t2
-                    corr[func][index] += corr_temp
-                    if variance:
-                        corr_square[func][index] += np.power(corr_temp, 2.0)
-                corr_count[index] += 1
+                    twotime_temp = func(frame_t1, frame_t2) # t1 > t2
+                    twotime[func].append([t0, t0+dt, twotime_temp]) # store the full information
 
         t_end = time.time()
         t_cost = t_end - t_start
         sys.stdout.write('\nTotal time cost: {:.2f} mins\n'.format(t_cost/60.0))
-        corr_lst = []
-        if variance:
-            corr_variance_lst = []
-        for key in corr:
-            corr_lst.append(np.hstack((dt_lst.reshape((len(dt_lst), 1)), corr[key]/corr_count)))
-            if variance:
-                corr_variance_lst.append(np.hstack((dt_lst.reshape((len(dt_lst), 1)), \
-                corr_square[key]/corr_count - np.power(corr[key]/corr_count, 2.0))))
-        if variance:
-            return corr_lst, corr_variance_lst
+
+        # convert the python array to numpy array
+        for key in twotime:
+            twotime[key] = np.array(twotime[key])
+
+        return twotime # return the dictionary
+
+    def cal_onetime(self, func_lst, tfreq=1, start=0, end=None, align=False, reduce='sum'):
+        # This method calculate any static(one-time) quantity. Like Energy ...
+        # And return the full list of data
+        #
+        # explain each argument:
+        #   func_lst: list of functions to calculate the quantity.
+        #       can specify multiple functions. E.g [msd,isf]
+        #       if only one function, no need to use [ ]
+        #   tfreq: calculate the quantity for every this many frames
+        #   start: the index of first frame you want to analyze. Default value=0
+        #   end: the index of last frame you want to analyze. Default value:
+        #                                                     last frame of file
+        #   align: enable/disable the trajectory alignment. If enable, specify the
+        #           index of reference snapshot. E.g. align=0. Default value: False
+        #   reduce: reduce the result. E.g. reduce=sum will sum all the quantity together
+        #
+        #   return: a python dictionary whose keys are the object of function and values
+        #            are the quantity associated to that function
+
+        # all get_timesteps() if no self.frame_number
+        if not self.frame_number:
+            self.get_framenumber()
+
+        if end == None:
+            end = self.frame_number
         else:
-            return corr_lst
+            assert type(end) == int
+
+        assert type(t0freq) == int
+        assert type(start) == int
+        if type(func_lst) != list:
+            func_lst = [func_lst]
+
+        # create the initial time array.
+        t_lst = np.arange(start, end, tfreq)
+
+        # start the calculation
+        # initialize the quantity dictionary
+        # E.g corr = {msd: []
+        #             isf: []}
+        onetime = {}
+
+        for f in func_lst:
+            onetime[f] = []
+        onetime['time list'] = t_lst
+
+        # initial configuration. used for alignment if enabled
+        if align is not False:
+            frame_start = self.file['particles']['all']['position']['value'][align]
+
+        t_start = time.time()
+
+        for t in t_lst:
+            sys.stdout.write('Initial time {} analyzed.\n'.format(t))
+            sys.stdout.flush()
+            if align is not False:
+                frame_t = self.get_frame(t)
+                frame_t = optimal_rotate(frame_t, frame_start)
+            else:
+                frame_t = self.get_frame(t)
+            for func in func_lst:
+                onetime_temp = func(frame_t)
+                if reduce == 'sum':
+                    try:
+                        onetime[func] += onetime_temp
+                    except ValueError:
+                        onetime[func] = onetime_temp
+                elif reduce == 'mean':
+                    try:
+                        temp[func].stream(onetime_temp, 0)
+                        onetime[func] = temp[func].mean
+                    except NameError:
+                        temp = {}
+                        temp[func] = OnlineVariance(1, 1)
+                        temp[func].stream(onetime_temp, 0)
+                        onetime[func] = temp[func].mean
+                elif reduce == 'var':
+                    try:
+                        temp[func].stream(onetime_temp, 0)
+                        onetime[func] = temp[func].var
+                    except NameError:
+                        temp = {}
+                        temp[func] = OnlineVariance(1, 1)
+                        temp[func].stream(onetime_temp, 0)
+                        onetime[func] = temp[func].var
+                elif reduce == 'None' or reduce == 'none':
+                    onetime[func].append(onetime_temp)
+
+        t_end = time.time()
+        t_cost = t_end - t_start
+        sys.stdout.write('\nTotal time cost: {:.2f} mins\n'.format(t_cost/60.0))
+
+        # convert the python array to numpy array if necessary
+        for key in onetime:
+            onetime[key] = np.array(onetime[key])
+
+        return onetime # return the dictionary
 
     def info(self):
         sys.stdout.write('File Loaded: {}\n'.format(self.filename))

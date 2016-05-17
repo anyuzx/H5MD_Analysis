@@ -1,0 +1,31 @@
+FILENAME: /Users/gs27722/Desktop/Chr5_145870001_157870001_SC/model_2/Chr5_145870001_157870001_G2.5_SC_1_short_traj.h5
+COMPUTE:
+    - isf:
+        id: 1
+        args:
+            wave_vector: 5.0
+            class_number: 26
+    - msd.g1:
+        id: 2
+    - cmap:
+        id: 3
+        args:
+           cutoff: 2.0
+WRITE:
+    - isf_g2.5_k5.0_short.txt:
+        id: 1
+    - msd_g2.5_short.txt:
+        id: 2
+    - cmap.npy:
+        id: 3
+ARGS_TWOTIME:
+    t0freq: 100
+    start: 0
+    end: Null
+    align: 0
+ARGS_ONETIME:
+    t0freq: 1000
+    start: 0
+    end: Null
+    align: 0
+

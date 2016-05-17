@@ -2,6 +2,7 @@ import numpy as np
 import LammpsH5MD
 import msd
 import isf
+import contactmap
 import sys
 import yaml
 import datetime
@@ -12,8 +13,12 @@ func_name_dic = {
     'msd.g1': msd.g1,
     'msd.g2': msd.g2,
     'msd.g3': msd.g3,
-    'isf':    isf.isf
+    'isf':    isf.isf,
+    'cmap': contactmap.contactmap
 }
+
+twotime_func_name_lst = ['msd.g1', 'msd.g2', 'msd.g3', 'isf']
+onetime_func_name_lst = ['cmap']
 # ===================================================================
 
 # ===================================================================
@@ -21,27 +26,56 @@ func_name_dic = {
 # return
 #   finname: path to the yaml format parameters file
 #   func_lst: the function list which feed into LammpsH5MD.cal_correlate()
+
+twotime_flag = 0
+onetime_flag = 0
+
 def read_parameter(script):
-    func_dic = {}
+    twofunc_dic = {}
+    onefunc_dic = {}
     write_dic = {}
+
+    global twotime_flag
+    global onetime_flag
+
     for key, value in script.iteritems():
         if key == 'FILENAME':
             finname = value
         elif key == 'COMPUTE':
+            func_name_lookup = {}
             for func in value:
                 for func_name, info in func.iteritems():
+                    func_name_lookup[info['id']] = func_name
+                    if func_name not in twotime_func_name_lst and func_name not in onetime_func_name_lst:
+                        raise NameError('Unknown function {}. Supported function: {}\n'.format(func_name, func_name_dic.keys()))
                     if 'args' in info:
                         args = info['args']
-                        func_dic[info['id']] = func_name_dic[func_name](**args)
+                        if func_name in twotime_func_name_lst:
+                            twofunc_dic[info['id']] = func_name_dic[func_name](**args)
+                        elif func_name in onetime_func_name_lst:
+                            onefunc_dic[info['id']] = func_name_dic[func_name](**args)
                     else:
                         args = None
-                        func_dic[info['id']] = func_name_dic[func_name]
+                        if func_name in twotime_func_name_lst:
+                            twofunc_dic[info['id']] = func_name_dic[func_name]
+                        elif func_name in onetime_func_name_lst:
+                            onefunc_dic[info['id']] = func_name_dic[func_name]
         elif key == 'WRITE':
             for write in value:
                 for write_name, info in write.iteritems():
                     write_dic[info['id']] = write_name
 
-    return finname, script['ARGS'], write_dic, func_dic
+    if 'ARGS_TWOTIME' in script and 'ARGS_ONETIME' not in script:
+        twotime_flag = 1
+        return [finname, script['ARGS_TWOTIME'], func_name_lookup, write_dic, twofunc_dic]
+    elif 'ARGS_ONETIME' in script and 'ARGS_TWOTIME' not in script:
+        onetime_flag = 1
+        return [finname, script['ARGS_ONETIME'], func_name_lookup, write_dic, onefunc_dic]
+    elif 'ARGS_ONETIME' in script and 'ARGS_TWOTIME' in script:
+        twotime_flag, onetime_flag = 1, 1
+        return [finname, script['ARGS_TWOTIME'], script['ARGS_ONETIME'], func_name_lookup, write_dic, twofunc_dic, onefunc_dic]
+    else:
+        raise ValueError('Please specify the argument passed to COMPUTE\n')
 # ===================================================================
 
 
@@ -50,31 +84,60 @@ def read_parameter(script):
 with open(sys.argv[1], 'r') as f:
     parameters = yaml.load(f)
 
-finname, kwargs, write_dic, func_dic = read_parameter(parameters)
+# Get the parameters
+parameters_result_lst = read_parameter(parameters)
+if twotime_flag == 1 and onetime_flag == 0:
+    finname = parameters_result_lst[0]
+    twotime_kwargs = parameters_result_lst[1]
+    func_name_lookup = parameters_result_lst[2]
+    write_dic = parameters_result_lst[3]
+    twofunc_dic = parameters_result_lst[4]
+elif twotime_flag == 0 and onetime_flag == 1:
+    finname = parameters_result_lst[0]
+    onetime_kwargs = parameters_result_lst[1]
+    func_name_lookup = parameters_result_lst[2]
+    write_dic = parameters_result_lst[3]
+    onefunc_dic = parameters_result_lst[4]
+elif twotime_flag == 1 and onetime_flag == 1:
+    finname = parameters_result_lst[0]
+    twotime_kwargs = parameters_result_lst[1]
+    onetime_kwargs = parameters_result_lst[2]
+    func_name_lookup = parameters_result_lst[3]
+    write_dic = parameters_result_lst[4]
+    twofunc_dic = parameters_result_lst[5]
+    onefunc_dic = parameters_result_lst[6]
+
 
 traj = LammpsH5MD.LammpsH5MD()    # create LammpsH5MD class
 traj.load(finname)     # load the trajectory
 
 # do the calculation
-if 'variance' in kwargs and kwargs['variance']:
-    mean, variance = traj.cal_correlate(func_dic.values(), **kwargs)
-else:
-    mean = traj.cal_correlate(func_dic.values(), **kwargs)
+# two-time quantity calculation
+if twotime_flag == 1:
+    twotime_data_dic = traj.cal_twotime(twofunc_dic.values(), **twotime_kwargs)
+# one-time quantity calculation
+if onetime_flag == 1:
+    onetime_data_dic = traj.cal_onetime(onefunc_dic.values(), **onetime_kwargs)
 
-output_name_lst = []
-for key in func_dic.keys():
-    output_name_lst.append(write_dic[key])
 
-if 'variance' in kwargs and kwargs['variance']:
-    for index, quantity in enumerate(zip(mean,variance)):
-        quantity = np.hstack((quantity[0], quantity[1][:,1:]))
-        with open(output_name_lst[index], 'w') as f:
+# write data on files
+# two cases: two-time quantity and one-time quantity
+twotime_output_name_lst = []
+onetime_output_name_lst = []
+for key in twofunc_dic.keys():
+    twotime_output_name_lst.append(write_dic[key])
+for key in onefunc_dic.keys():
+    onetime_output_name_lst.append(write_dic[key])
+
+for key in write_dic:
+    if func_name_lookup[key] in twotime_func_name_lst:
+        with open(write_dic[key], 'w') as f:
             f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
-            f.write('# frames, mean, variance\n')
-            np.savetxt(f, quantity, delimiter='    ')
-else:
-    for index, quantity in enumerate(mean):
-        with open(output_name_lst[index], 'w') as f:
-            f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
-            f.write('# frames, mean\n')
-            np.savetxt(f, quantity, delimiter='    ')
+            f.write('t0 t1 {}\n'.format(func_name_lookup[key]))
+            np.savetxt(f, twotime_data_dic[twofunc_dic[key]], delimiter=' ')
+    elif func_name_lookup[key] in onetime_func_name_lst:
+        with open(write_dic[key], 'w') as f:
+            #f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
+            #f.write('QUANTITY: {}\n'.format(func_name_lookup[key]))
+            #np.savetxt(f, onetime_data_dic[onefunc_dic[key]], delimiter=' ')
+            np.save(f, onetime_data_dic[onefunc_dic[key]])
