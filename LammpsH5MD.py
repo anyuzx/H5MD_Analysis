@@ -3,6 +3,8 @@ import h5py
 import sys
 import time
 
+__all__ = ['LammpsH5MD']
+
 # =====================================================================
 # PRIVATE function
 # ---------------------------------------------------------------------
@@ -63,6 +65,7 @@ class LammpsH5MD:
     def __init__(self):
         self.file = self.filename = None
         self.frame_number = None
+        self.atoms_number = None
 
     def load(self, finname):
         # load the trajectory
@@ -75,14 +78,20 @@ class LammpsH5MD:
     def get_framenumber(self):
         # get the total number of snapshots stored in file
         try:
-            self.frame_number = self.file['particles']['all']['position']\
-                                         ['step'][:].shape[0]
+            self.frame_number = self.file['particles/all/position/value'].shape[0]
+        except:
+            raise
+
+    def get_atomnumber(self):
+        # get the total number of atoms/particles stored in file
+        try:
+            self.atoms_number = self.file['particles/all/position/value'].shape[1]
         except:
             raise
 
     def get_frame(self,t):
         # get the frame provided the index of snapshot
-        return self.file['particles']['all']['position']['value'][t]
+        return self.file['particles/all/position/value'][t]
 
     def cal_twotime(self, func_lst, t0freq=10, dtnumber=100, start=0, end=None,
                       align=False, mode='log'):
@@ -147,7 +156,7 @@ class LammpsH5MD:
 
         # initial configuration. used for alignment if enabled
         if align is not False:
-            frame_start = self.file['particles']['all']['position']['value'][align]
+            frame_start = self.file['particles/all/position/value'][align]
         t_start = time.time()
 
         for t0 in t0_lst:
@@ -224,7 +233,7 @@ class LammpsH5MD:
 
         # initial configuration. used for alignment if enabled
         if align is not False:
-            frame_start = self.file['particles']['all']['position']['value'][align]
+            frame_start = self.file['particles/all/position/value'][align]
 
         t_start = time.time()
 
@@ -277,3 +286,76 @@ class LammpsH5MD:
     def info(self):
         sys.stdout.write('File Loaded: {}\n'.format(self.filename))
         sys.stdout.write('Toal Number of Frames: {}\n'.format(self.frame_number))
+
+    def extract_traj(self, foutname, stride, start=0, end=None):
+        # all get_timesteps() if no self.frame_number
+        if not self.frame_number:
+            self.get_framenumber()
+
+        if not self.atoms_number:
+            self.get_atomnumber()
+
+        if end == None:
+            end = self.frame_number
+        else:
+            assert type(end) == int
+
+        sys.stdout.write('Initialize the new H5MD file\n')
+        new_traj = h5py.File(foutname, 'w') # create a new file
+
+        # first get the dimension of dataset in original trajectory file
+        nframes = self.frame_number
+        natoms = self.atoms_number
+
+        new_nframes = np.arange(nframes)[start:end:stride].shape[0]
+
+        # copy h5md, observables, parameters group
+        self.file.copy('/h5md', new_traj)
+        self.file.copy('/observables', new_traj)
+        self.file.copy('/parameters', new_traj)
+
+        # create particles/all group
+        new_traj.create_group('/particles/all')
+
+        # create all the group in particles/all/
+        new_traj.create_group('/particles/all/position')
+        new_traj.create_group('/particles/all/box/edges')
+        new_traj.create_group('/particles/all/velocity')
+
+        # create dataset with new dimension position and velocity
+        for key in ['position','velocity']:
+            new_traj.create_dataset('particles/all/' + key + '/time', (new_nframes, ), dtype='float64')
+            new_traj.create_dataset('particles/all/' + key + '/step', (new_nframes, ), dtype='int32')
+            new_traj.create_dataset('particles/all/' + key + '/value', (new_nframes, natoms, 3), dtype='float64')
+
+        # create box dataset
+        new_traj.create_dataset('particles/all/box/edges/time', (new_nframes, ), dtype='float64')
+        new_traj.create_dataset('particles/all/box/edges/step', (new_nframes, ), dtype='int32')
+        new_traj.create_dataset('particles/all/box/edges/value', (new_nframes, 3), dtype='float64')
+
+        # loop throught the original trajectory file
+        # store the frames into our new file
+
+        t_start = time.time()
+        for index, t in enumerate(np.arange(nframes)[start:end:stride]):
+            sys.stdout.write('Process timestep {}\n'.format(t))
+            sys.stdout.flush()
+            for key in ['position', 'velocity']:
+                new_traj['particles/all/' + key + '/time'][index] = np.copy(self.file['particles/all/' + key + '/time'][t])
+                new_traj['particles/all/' + key + '/step'][index] = np.copy(self.file['particles/all/' + key + '/step'][t])
+                new_traj['particles/all/' + key + '/value'][index] = np.copy(self.file['particles/all/' + key + '/value'][t])
+
+            new_traj['particles/all/box/edges/time'][index] = np.copy(self.file['particles/all/box/edges/time'][t])
+            new_traj['particles/all/box/edges/step'][index] = np.copy(self.file['particles/all/box/edges/step'][t])
+            new_traj['particles/all/box/edges/value'][index] = np.copy(self.file['particles/all/box/edges/value'][t])
+
+
+        new_traj.flush()
+        new_traj.close()
+        self.file.close()
+        t_end = time.time()
+        t_cost = t_end - t_start
+        sys.stdout.write('\nTotal time cost: {:.2f} mins\n'.format(t_cost/60.0))
+        sys.stdout.flush()
+
+        return
