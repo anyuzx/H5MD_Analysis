@@ -74,6 +74,20 @@ The main program is `LammpsH5MD.py`. It defines the class `LammpsH5MD` which is 
 
 > **Return**: a python dictionary whose keys are the object of function and values are the quantity associated to that function.
 
+* `LammpsH5MD.extract_traj(foutname, stride, start=0, end=None)`
+
+> Extract subset of full trajectory and write to a new H5MD formatted file.
+
+> **Parameter**: foutname: path/name of file you want to write
+
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stride: Extract frame every this many number of frames
+
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; start: start index of frames subject to extraction. Default: the first frame of original trajectory file.
+
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; end: end index of frames subject to extraction. Default: The last frame of original trajectory file.
+
+> **Return**: None. Invoke this method, a new file will be written on disk.
+
 * `LammpsH5MD.info()`
 
 > Print out the avaiable information about the loaded file
