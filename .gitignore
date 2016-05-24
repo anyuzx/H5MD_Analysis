@@ -1,5 +1,6 @@
 # local emacs computer specific log files
 *.pyc
+*.c
 
 # Compiled source #
 ###################
