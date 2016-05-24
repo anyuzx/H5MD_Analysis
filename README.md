@@ -198,3 +198,9 @@ ARGS_ONETIME:
 * `WRITE`: Specify the name of output file you want to use. ID corresponds to the `COMPUTE`.
 * `ARGS_TWOTIME`: Specify the arguments parsed to `LammpsH5MD.cal_twotime`. See above.
 * `ARGS_ONETIME`: Specify the arguments parsed to `LammpsH5MD.cal_onetime`. See above.
+
+### Compute Modules List
+* `isf`: calculate the self intermediate scattering function
+* `msd`: calculate `g1`, `g2` and `g3` part of mean square displacement of system
+* `cmap`: calculate contact map given certain threshold determining contact
+* `rdp`: calculate radial denstiy profile
