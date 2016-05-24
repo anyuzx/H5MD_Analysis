@@ -47,17 +47,19 @@ class OnlineVariance:
     Welford's algorithm to computes the sample mean, variance in a stream
     """
 
-    def __init__(self, dim, length):
-        self.mean, self.var, self.S = np.zeros((length, dim)), np.zeros((length, dim)), np.zeros((length, dim))
-        self.n = np.zeros(length)
+    def __init__(self, dim):
+        if dim == 1:
+            self.mean, self.var, self.S = 0,0,0
+        else:
+            self.mean, self.var, self.S = np.zeros(dim), np.zeros(dim), np.zeros(dim)
+        self.n = 0
 
-    def stream(self, data_point, position):
-        self.n[position] += 1.0
-        self.delta = data_point - self.mean[position]
-        self.mean[position] += self.delta / float(self.n[position])
-        self.S[position] += self.delta * (data_point - self.mean[position])
-        self.var[position] = self.S[position] / (self.n[position] - 1.0)
-
+    def stream(self, data_point):
+        self.n += 1
+        self.delta = data_point - self.mean
+        self.mean += self.delta / float(self.n)
+        self.S += self.delta * (data_point - self.mean)
+        self.var = self.S / (self.n - 1.0)
         return self.mean, self.var
 # =====================================================================
 
@@ -213,7 +215,7 @@ class LammpsH5MD:
         else:
             assert type(end) == int
 
-        assert type(t0freq) == int
+        assert type(tfreq) == int
         assert type(start) == int
         if type(func_lst) != list:
             func_lst = [func_lst]
@@ -254,21 +256,21 @@ class LammpsH5MD:
                         onetime[func] = onetime_temp
                 elif reduce == 'mean':
                     try:
-                        temp[func].stream(onetime_temp, 0)
+                        temp[func].stream(onetime_temp)
                         onetime[func] = temp[func].mean
                     except NameError:
                         temp = {}
-                        temp[func] = OnlineVariance(1, 1)
-                        temp[func].stream(onetime_temp, 0)
+                        temp[func] = OnlineVariance(dim=onetime_temp.shape)
+                        temp[func].stream(onetime_temp)
                         onetime[func] = temp[func].mean
                 elif reduce == 'var':
                     try:
-                        temp[func].stream(onetime_temp, 0)
+                        temp[func].stream(onetime_temp)
                         onetime[func] = temp[func].var
                     except NameError:
                         temp = {}
-                        temp[func] = OnlineVariance(1, 1)
-                        temp[func].stream(onetime_temp, 0)
+                        temp[func] = OnlineVariance(dim=onetime_temp.shape)
+                        temp[func].stream(onetime_temp)
                         onetime[func] = temp[func].var
                 elif reduce == 'None' or reduce == 'none':
                     onetime[func].append(onetime_temp)

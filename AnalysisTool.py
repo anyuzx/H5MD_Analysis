@@ -3,6 +3,7 @@ import LammpsH5MD
 import msd
 import isf
 import contactmap
+import rdp
 import sys
 import yaml
 import datetime
@@ -14,11 +15,12 @@ func_name_dic = {
     'msd.g2': msd.g2,
     'msd.g3': msd.g3,
     'isf':    isf.isf,
-    'cmap': contactmap.contactmap
+    'cmap': contactmap.contactmap,
+    'rdp': rdp.rdp
 }
 
 twotime_func_name_lst = ['msd.g1', 'msd.g2', 'msd.g3', 'isf']
-onetime_func_name_lst = ['cmap']
+onetime_func_name_lst = ['cmap', 'rdp']
 # ===================================================================
 
 # ===================================================================
@@ -129,7 +131,7 @@ if twotime_flag == 1:
 # one-time quantity calculation
 if onetime_flag == 1:
     onetime_data_dic = traj.cal_onetime(onefunc_dic.values(), **onetime_kwargs)
-    onetime_output_name_lst.append(write_dic[key])
+    onetime_output_name_lst = []
     for key in onefunc_dic.keys():
         onetime_output_name_lst.append(write_dic[key])
     for key in write_dic:
