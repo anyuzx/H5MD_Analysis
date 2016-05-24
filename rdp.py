@@ -24,7 +24,7 @@ def rdp0(frame_t, index, rmax, dr):
     density = []
     for atom_index in index:
         atom_index = np.array(atom_index, dtype=np.int) - 1
-        hist = np.histogram(radial_dist[atom_index], bins=np.linspace(0.0, rmax, int(rmax/dr)))
+        hist, bin_edges = np.histogram(radial_dist[atom_index], bins=np.linspace(0.0, rmax, int(rmax/dr)))
         density_temp = hist/(4*np.pi*(bins_center**2)*(atom_index.shape[0]/((4.0/3.0)*np.pi*rmax**3.0))*actual_dr)
         density.append(np.column_stack((bins_center, density_temp)))
 

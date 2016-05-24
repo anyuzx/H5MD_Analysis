@@ -2,6 +2,9 @@ import numpy as np
 import datetime
 import pandas as pd
 
+
+__all__ = ['LammpsData']
+
 """
 Example:
 ld = LammpsData()
