@@ -4,6 +4,7 @@ import msd
 import isf
 import contactmap
 import rdp
+import sdp
 import sys
 import yaml
 import datetime
@@ -16,11 +17,12 @@ func_name_dic = {
     'msd.g3': msd.g3,
     'isf':    isf.isf,
     'cmap': contactmap.contactmap,
-    'rdp': rdp.rdp
+    'rdp': rdp.rdp,
+    'sdp': sdp.sdp
 }
 
 twotime_func_name_lst = ['msd.g1', 'msd.g2', 'msd.g3', 'isf']
-onetime_func_name_lst = ['cmap', 'rdp']
+onetime_func_name_lst = ['cmap', 'rdp', 'sdp']
 # ===================================================================
 
 # ===================================================================
@@ -137,7 +139,7 @@ if onetime_flag == 1:
     for key in write_dic:
         if func_name_lookup[key] in onetime_func_name_lst:
             with open(write_dic[key], 'w') as f:
-                #f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
-                #f.write('QUANTITY: {}\n'.format(func_name_lookup[key]))
-                #np.savetxt(f, onetime_data_dic[onefunc_dic[key]], delimiter=' ')
-                np.save(f, onetime_data_dic[onefunc_dic[key]])
+                if '.npy' in write_dic[key]:
+                    np.save(f, onetime_data_dic[onefunc_dic[key]])
+                else:
+                    np.savetxt(f, onetime_data_dic[onefunc_dic[key]])
