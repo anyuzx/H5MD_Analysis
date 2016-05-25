@@ -4,6 +4,7 @@ import msd
 import isf
 import contactmap
 import rdp
+import sdp
 import sys
 import yaml
 import datetime
@@ -16,11 +17,12 @@ func_name_dic = {
     'msd.g3': msd.g3,
     'isf':    isf.isf,
     'cmap': contactmap.contactmap,
-    'rdp': rdp.rdp
+    'rdp': rdp.rdp,
+    'sdp': sdp.sdp
 }
 
 twotime_func_name_lst = ['msd.g1', 'msd.g2', 'msd.g3', 'isf']
-onetime_func_name_lst = ['cmap', 'rdp']
+onetime_func_name_lst = ['cmap', 'rdp', 'sdp']
 # ===================================================================
 
 # ===================================================================
