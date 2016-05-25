@@ -142,4 +142,5 @@ if onetime_flag == 1:
                 if '.npy' in write_dic[key]:
                     np.save(f, onetime_data_dic[onefunc_dic[key]])
                 else:
+                    f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
                     np.savetxt(f, onetime_data_dic[onefunc_dic[key]])
