@@ -204,3 +204,4 @@ ARGS_ONETIME:
 * `msd`: calculate `g1`, `g2` and `g3` part of mean square displacement of system
 * `cmap`: calculate contact map given certain threshold determining contact
 * `rdp`: calculate radial denstiy profile
+* `sdp`: calculate subchain distance profile
