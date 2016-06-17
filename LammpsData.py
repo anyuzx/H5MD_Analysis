@@ -114,6 +114,23 @@ class LammpsData:
             else:
                 self.dataframe[keyword] = pd.DataFrame(value, columns=dkeywords[keyword])
 
+    def SetDescription(self, string):
+        if 'description' not in self.headers or self.headers['description'] == '':
+            self.headers['description'] = string
+        else:
+            sys.stdout.write('Warning: overwrite the description\n')
+            self.headers['description'] = string
+
+    def AddAngle(self):
+        if 'Angles' in self.sections or 'angles' in self.headers or 'angle types' in self.headers:
+            sys.stdout.write('Angles information already in the data file.\n')
+            sys.stdout.flush()
+        else:
+            natoms = self.headers['atoms'] # number of atoms
+            self.sections['Angles'] = [[str(i), str(1), str(i), str(i+1), str(i+2)] for i in range(1, natoms-1)]
+            self.headers['angles'] = natoms-2
+            self.headers['angle types'] = 1
+
 # ------------------------------------------------------------------------------
 # define Lammps Data File keywords
 hkeywords = ["atoms","ellipsoids","lines","triangles","bodies",
