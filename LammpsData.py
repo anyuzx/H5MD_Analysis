@@ -10,6 +10,7 @@ Example:
 ld = LammpsData()
 ld.read('Chr5_145870001_157870001_SC.dat')
 ld.write('Chr5_145870001_157870001_SC_duplicate.dat')
+ld.AddAngle()
 
 The above codes will write a data file same as its read in.
 """
