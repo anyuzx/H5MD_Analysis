@@ -1,4 +1,6 @@
-## Documentation
+# Documentation
+
+## LammpsH5MD
 
 This module is used for analyzing LAMMPS H5MD format dump trajectory file. The valid trajectory file can be analyzed must contains position or velocity hdf5 group. And the path of the group is accessed through `['particles/all/position]`. The module right now can calculate **Mean Square Displacement** and **Intermediate Scattering Function**. However custom function can be easily defined as integrated into this module, as long as the it's function of configuration of position of particles at time `t` and time `t+\tau`. And one is only interested in the average of quantity depends on `\tau`. For instance, **Mean Square Displacement** is one of the examples
 
@@ -8,7 +10,7 @@ The other example is **Intermediate Scattering Function**
 
 ![](https://bgqjbg-bn1305.files.1drv.com/y3m7LFJ8-PE_iAUza3je3v2LisGtKLlBrtNL8jXMYQAXbomg9Fgf83bZqW-wcREmTvoIv2c-K_UqCl2xeqV7sNnVkXMi1vgVXycDmgfjg8pY96K1dECVvC9RaY5Sk6gn5GAPEqaUg8hhjETnotdEgLwOebgqyAS_8K-1KF1QSCa7Vk?width=256&height=53&cropmode=none)
 
-## How to use
+### How to use
 
 The main program is `LammpsH5MD.py`. It defines the class `LammpsH5MD` which is used to read and process H5MD file. It has several class members.
 
@@ -96,9 +98,9 @@ The main program is `LammpsH5MD.py`. It defines the class `LammpsH5MD` which is 
 
 > **Return**: None
 
-## Tutorial
+### Tutorial
 
-### General Use
+#### General Use
 Suppose we want to calculate the **Mean Square Displacement** of trajectory file `my_h5md_traj.h5`. The following code can do this
 
 ``` python
@@ -112,7 +114,7 @@ traj.load('my_h5md_traj.h5')
 msd = traj.cal_twotime(msd.g1, t0freq=10, start=0, align=0)
 ```
 
-###  Calculation Function Module
+####  Calculation Function Module
 `msd` in the above code is a module which defines the function which actually calculate the quantity. Such function can have parameters, but eventually should only be a function of system configuration at time $t$ and at time $t+\tau$. Not let's look at what module `msd` actually contains
 
 ``` python
@@ -141,7 +143,7 @@ def isf(wave_vector, class_number):
 
 Notice that we define a lambda function above because our function depends on $\mathbf{k}$ and how many grid points we want to use in Lebedev quadrature. So we need to define a lambda function to pass a parameterized function to our `LammpsH5MD.cal_correlate()`. 
 
-### Explanination of Arguments
+#### Explanination of Arguments
 We will explain every arguments in `LammpsH5MD.cal_twotime` by an example. Suppose we have a trajectory file which has total 20001 frames.
 
 ```python
@@ -155,7 +157,7 @@ LammpsH5MD.cal_twotime([msd.msd, isf.isf(4.0,26)], t0freq=10, dtnumber = 200, st
 * `align`: enable/disable trajectory alignment. Speicfy the index of frame you want to use as reference.  The alignment is done using [Kabsch algorithm](https://en.wikipedia.org/wiki/Kabsch_algorithm)
 * `mode`: Two options: `log` and `linear`. The method used to sample the dt. In the above example, since `start=10000` and `end=15000`, we maximum dt is `start-end = 5000`. The `log` means that dt array is an array with `dtnumber=100` length in the range of 0 and 5000 such that the interval between each element is logrithm separated. `linear` means that element in dt array is separated uniformly. `log` mode is useful when log scale on time scale is needed.
 
-### Use parameter file
+#### Use parameter file
 We can use a parameter file to parse the arguments to `LammpsH5MD`. The parameter file use `YAML` syntax. For instance:
 
 ```
@@ -192,16 +194,41 @@ ARGS_ONETIME:
     align: 0
 ```
 
-#### Keywords
+##### Keywords
 * `FILE`: Specify the path to the trajectory file
 * `COMPUTE`: Specify the quantity computed. Give the name of function and arguments if necessary. Also assign a unique ID to each compute.
 * `WRITE`: Specify the name of output file you want to use. ID corresponds to the `COMPUTE`.
 * `ARGS_TWOTIME`: Specify the arguments parsed to `LammpsH5MD.cal_twotime`. See above.
 * `ARGS_ONETIME`: Specify the arguments parsed to `LammpsH5MD.cal_onetime`. See above.
 
-### Compute Modules List
+#### Compute Modules List
 * `isf`: calculate the self intermediate scattering function
 * `msd`: calculate `g1`, `g2` and `g3` part of mean square displacement of system
 * `cmap`: calculate contact map given certain threshold determining contact
 * `rdp`: calculate radial denstiy profile
 * `sdp`: calculate subchain distance profile
+
+---------------------
+
+## LammpsData
+
+This module can be used to read, write, manipulate Lammps Data file. 
+
+### Example
+
+```python
+import H5MD_Analysis as HA
+
+ld = HA.LammpsData()
+ld.read('lammps_data_file.dat')
+ld.AddAngle()
+ld.write('new_lammps_data_file.dat')
+```
+
+method `read` can be used to read Lammps Data file. The information in one data file is decomposed to two dictionary `LammpsData.headers` and `LammpsData.sections`. `headers` dictionary contains information like number of atoms, bonds, angles, box dimension, et al. `sections` dictionary contains information like `Masses`, `Atoms`, `Bonds`, et al. The description of data file at the first line of file can be retrieved by keyword `description` in `LammpsData.headers`.
+
+method `AddAngle` can be used to add angles between atoms in a atom index order. Like atom i, atom i+1, and atom i+2 form a angle. This method is used to change data file generated from simulation without angle potential to a data file with angles information, and then used to feed into simulation with angle potential.
+
+method `SetDescription` can be used to overwrite the description line.
+
+method `GetDataFrame` can be used to create a Pandas DataFrame object for every keyword in `LammpsData.sections`.

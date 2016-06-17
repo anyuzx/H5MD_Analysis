@@ -7,3 +7,4 @@
 - [X] add contact map compute module
     - [X] add it
     - [X] test it
+- [X] write information on LammpsData in README file
