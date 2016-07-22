@@ -35,6 +35,8 @@ class LammpsData:
         found = 0
         with open(fp, 'r') as f:
             for i, line in enumerate(f):
+                line = line.partition('#')[0]
+                line = line.rstrip()
                 if i == 0:
                     headers['description'] = line[:-1]
                 try:
