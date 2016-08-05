@@ -1,4 +1,5 @@
 import numpy as np
+import argparse
 import LammpsH5MD
 import msd
 import isf
@@ -83,9 +84,20 @@ def read_parameter(script):
 # ===================================================================
 
 
+# parse the arguments
+# usage:
+#   python AnalysisTool.py parameter_script.txt -q
+#   first argument: script parameter file.
+#   --quite(-q): not output the information on screeen
+
+parser = argparse.ArgumentParser(description='H5MD trajectory file analysis tool')
+parser.add_argument('parameter_file', help='parameter script file')
+parser.add_argument('-q', '--quite', help='enable/disable quite execution', action='store_false', default=True, dest='screen_info')
+args = parser.parse_args()
+
 # parameters file is written use YAML syntax
 # load the parameters file using yaml
-with open(sys.argv[1], 'r') as f:
+with open(args.parameter_file, 'r') as f:
     parameters = yaml.load(f)
 
 # Get the parameters
@@ -118,7 +130,7 @@ traj.load(finname)     # load the trajectory
 # do the calculation
 # two-time quantity calculation
 if twotime_flag == 1:
-    twotime_data_dic = traj.cal_twotime(twofunc_dic.values(), **twotime_kwargs)
+    twotime_data_dic = traj.cal_twotime(twofunc_dic.values(), screen_info=args.screen_info, **twotime_kwargs)
     twotime_output_name_lst = []
     for key in twofunc_dic.keys():
         twotime_output_name_lst.append(write_dic[key])
@@ -132,7 +144,7 @@ if twotime_flag == 1:
 
 # one-time quantity calculation
 if onetime_flag == 1:
-    onetime_data_dic = traj.cal_onetime(onefunc_dic.values(), **onetime_kwargs)
+    onetime_data_dic = traj.cal_onetime(onefunc_dic.values(), screen_info=args.screen_info, **onetime_kwargs)
     onetime_output_name_lst = []
     for key in onefunc_dic.keys():
         onetime_output_name_lst.append(write_dic[key])

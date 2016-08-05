@@ -96,7 +96,7 @@ class LammpsH5MD:
         return self.file['particles/all/position/value'][t]
 
     def cal_twotime(self, func_lst, t0freq=10, dtnumber=100, start=0, end=None,
-                      align=False, mode='log'):
+                      align=False, mode='log', screen_info=True):
         # This method calculate any two-time quantity. Like MSD, ISF ...
         # And return the full list of data
         #
@@ -162,8 +162,9 @@ class LammpsH5MD:
         t_start = time.time()
 
         for t0 in t0_lst:
-            sys.stdout.write('Initial time {} analyzed.\n'.format(t0))
-            sys.stdout.flush()
+            if screen_info:
+                sys.stdout.write('Initial time {} analyzed.\n'.format(t0))
+                sys.stdout.flush()
             for index, dt in enumerate(dt_lst[np.where(dt_lst <= (end-t0-1))]):
                 if align is not False:
                     frame_t1 = self.get_frame(t0+dt)
@@ -187,7 +188,7 @@ class LammpsH5MD:
 
         return twotime # return the dictionary
 
-    def cal_onetime(self, func_lst, tfreq=1, start=0, end=None, align=False, reduce='sum'):
+    def cal_onetime(self, func_lst, tfreq=1, start=0, end=None, align=False, reduce='sum', screen_info=True):
         # This method calculate any static(one-time) quantity. Like Energy ...
         # And return the full list of data
         #
@@ -240,8 +241,9 @@ class LammpsH5MD:
         t_start = time.time()
 
         for t in t_lst:
-            sys.stdout.write('Initial time {} analyzed.\n'.format(t))
-            sys.stdout.flush()
+            if screen_info:
+                sys.stdout.write('Initial time {} analyzed.\n'.format(t))
+                sys.stdout.flush()
             if align is not False:
                 frame_t = self.get_frame(t)
                 frame_t = optimal_rotate(frame_t, frame_start)

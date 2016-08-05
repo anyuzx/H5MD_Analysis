@@ -14,7 +14,6 @@ def g1(frame_t1, frame_t2):
 
 
 def g2(frame_t1, frame_t2):
-    self.name = 'msd_g2'
     com_t1 = np.mean(frame_t1, axis=0)
     com_t2 = np.mean(frame_t2, axis=0)
     frame_t1_com = frame_t1 - com_t1
@@ -23,7 +22,6 @@ def g2(frame_t1, frame_t2):
 
 
 def g3(frame_t1, frame_t2):
-    self.name = 'msd_g3'
     com_t1 = np.mean(frame_t1, axis=0)
     com_t2 = np.mean(frame_t2, axis=0)
     return np.sum(np.power(com_t1 - com_t2, 2))
