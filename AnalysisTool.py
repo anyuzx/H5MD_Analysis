@@ -4,6 +4,7 @@ import LammpsH5MD
 import msd
 import isf
 import contactmap
+import distmap
 import rdp
 import sdp
 import sys
@@ -19,7 +20,8 @@ func_name_dic = {
     'isf':    isf.isf,
     'cmap': contactmap.contactmap,
     'rdp': rdp.rdp,
-    'sdp': sdp.sdp
+    'sdp': sdp.sdp,
+    'dmap': distmap.distmap
 }
 
 twotime_func_name_lst = ['msd.g1', 'msd.g2', 'msd.g3', 'isf']

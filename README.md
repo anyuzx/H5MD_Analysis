@@ -207,6 +207,7 @@ ARGS_ONETIME:
 * `cmap`: calculate contact map given certain threshold determining contact
 * `rdp`: calculate radial denstiy profile
 * `sdp`: calculate subchain distance profile
+* `dmap`: calculate distance map
 
 ---------------------
 
