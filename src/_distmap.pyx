@@ -5,7 +5,6 @@ from libc.math cimport sqrt
 
 DTYPE = np.float32
 ctypedef np.float32_t DTYPE_t
-ctypedef np.int32_t DTYPE2_t
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
