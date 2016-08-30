@@ -25,4 +25,4 @@ def distmap(np.ndarray[DTYPE_t, ndim=2] frame):
                  dsquare += tmp * tmp
              DMAP[j,i] = sqrt(dsquare)
 
-    return CMAP
+    return DMAP
