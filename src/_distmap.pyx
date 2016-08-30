@@ -4,7 +4,6 @@ cimport numpy as np
 from libc.math cimport sqrt
 
 DTYPE = np.float32
-DTYPE2 = np.int32
 ctypedef np.float32_t DTYPE_t
 ctypedef np.int32_t DTYPE2_t
 
@@ -14,7 +13,7 @@ def distmap(np.ndarray[DTYPE_t, ndim=2] frame):
     cdef int N = frame.shape[0]
     cdef int dim = frame.shape[1]
 
-    cdef np.ndarray[DTYPE2_t, ndim=2] DMAP = np.zeros((N,N), dtype=DTYPE2)
+    cdef np.ndarray[DTYPE_t, ndim=2] DMAP = np.zeros((N,N), dtype=DTYPE)
     cdef DTYPE_t tmp, dsquare
     cdef int i, j, k
     for i in xrange(N-1):
