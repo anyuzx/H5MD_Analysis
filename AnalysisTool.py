@@ -25,7 +25,7 @@ func_name_dic = {
 }
 
 twotime_func_name_lst = ['msd.g1', 'msd.g2', 'msd.g3', 'isf']
-onetime_func_name_lst = ['cmap', 'rdp', 'sdp']
+onetime_func_name_lst = ['cmap', 'rdp', 'sdp', 'dmap']
 # ===================================================================
 
 # ===================================================================
