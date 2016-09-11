@@ -162,9 +162,9 @@ class LammpsH5MD:
         t_start = time.time()
 
         for t0 in t0_lst:
-            if screen_info:
-                sys.stdout.write('Initial time {} analyzed.\n'.format(t0))
-                sys.stdout.flush()
+            #if screen_info:
+            sys.stdout.write('Initial time {} analyzed.\n'.format(t0))
+            sys.stdout.flush()
             for index, dt in enumerate(dt_lst[np.where(dt_lst <= (end-t0-1))]):
                 if align is not False:
                     frame_t1 = self.get_frame(t0+dt)
@@ -241,9 +241,9 @@ class LammpsH5MD:
         t_start = time.time()
 
         for t in t_lst:
-            if screen_info:
-                sys.stdout.write('Initial time {} analyzed.\n'.format(t))
-                sys.stdout.flush()
+            #if screen_info:
+            sys.stdout.write('Initial time {} analyzed.\n'.format(t))
+            sys.stdout.flush()
             if align is not False:
                 frame_t = self.get_frame(t)
                 frame_t = optimal_rotate(frame_t, frame_start)

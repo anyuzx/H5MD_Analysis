@@ -95,7 +95,20 @@ def read_parameter(script):
 parser = argparse.ArgumentParser(description='H5MD trajectory file analysis tool')
 parser.add_argument('parameter_file', help='parameter script file')
 parser.add_argument('-q', '--quite', help='enable/disable quite execution', action='store_false', default=True, dest='screen_info')
+parser.add_argument('-l', '--log',  help='output to log files.', dest='logfile')
 args = parser.parse_args()
+
+# report error if both args.quite and args.logfile are required
+if not args.screen_info and args.logfile:
+    sys.stdout.write('ERROR: Both quite and log argument are specified. Program terminated.\n')
+    sys.stdout.flush()
+    sys.exit(0)
+
+# redirect stdout to log file if specified
+if args.logfile:
+    sys.stdout = open(args.logfile, 'w')
+elif not args.screen_info:
+    sys.stdout = open(os.devnull, 'w')
 
 # parameters file is written use YAML syntax
 # load the parameters file using yaml
