@@ -21,11 +21,12 @@ func_name_dic = {
     'cmap': contactmap.contactmap,
     'rdp': rdp.rdp,
     'sdp': sdp.sdp,
-    'dmap': distmap.distmap
+    'dmap': distmap.distmap,
+    'dmap.square': distmap.distmap_square
 }
 
 twotime_func_name_lst = ['msd.g1', 'msd.g2', 'msd.g3', 'isf']
-onetime_func_name_lst = ['cmap', 'rdp', 'sdp', 'dmap']
+onetime_func_name_lst = ['cmap', 'rdp', 'sdp', 'dmap', 'dmap.square']
 # ===================================================================
 
 # ===================================================================
