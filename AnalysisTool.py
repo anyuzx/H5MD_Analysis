@@ -24,7 +24,7 @@ func_name_dic = {
     'sdp': sdp.sdp,
     'dmap': distmap.distmap,
     'dmap.square': distmap.distmap_square,
-    'cmapevolution': contactmapevolution.contactevolution
+    'cmapevolution': contactevolution.contactevolution
 }
 
 twotime_func_name_lst = ['msd.g1', 'msd.g2', 'msd.g3', 'isf', 'cmapevolution']
