@@ -55,9 +55,9 @@ def compute_gyration_tensor(np.ndarray[DTYPE_t, ndim=2] frame):
     loop_start = loop_list[i][0] - 1
     loop_end = loop_list[i][1] - 1
     loop_size = loop_list[i][1] - loop_list[i][0] + 1
-    xmean = np.mean(frame, axis=0)[0]
-    ymean = np.mean(frame, axis=0)[1]
-    zmean = np.mean(frame, axis=0)[2]
+    xmean = np.mean(frame[loop_start, loop_end+1], axis=0)[0]
+    ymean = np.mean(frame[loop_start, loop_end+1], axis=0)[1]
+    zmean = np.mean(frame[loop_start, loop_end+1], axis=0)[2]
     for k in xrange(loop_size - 1):
       gyration_tensor[i,0,0] += (1.0/loop_size) * (frame[k+loop_start,0] - xmean) * (frame[k+loop_start,0] - xmean)
       gyration_tensor[i,1,1] += (1.0/loop_size) * (frame[k+loop_start,1] - ymean) * (frame[k+loop_start,1] - ymean)
