@@ -47,7 +47,7 @@ def compute_gyration_tensor(np.ndarray[DTYPE_t, ndim=2] frame):
 
   cdef int n_loop = 32
 
-  cdef np.ndarray[DTYPE_t, ndim = 2] gyration_tensor = np.zeros((n_loop,3,3), dtype=DTYPE)
+  cdef np.ndarray[DTYPE_t, ndim = 3] gyration_tensor = np.zeros((n_loop, 3, 3), dtype=DTYPE)
   cdef int i, k
   cdef int loop_start, loop_end, loop_size
   cdef DTYPE_t xmean, ymean, zmean
