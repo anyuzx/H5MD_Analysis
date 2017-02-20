@@ -8,3 +8,4 @@
     - [X] add it
     - [X] test it
 - [X] write information on LammpsData in README file
+- [X] add function to calculate the gyration tensor of each loop region 
