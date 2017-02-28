@@ -209,27 +209,3 @@ ARGS_ONETIME:
 * `sdp`: calculate subchain distance profile
 * `dmap`: calculate distance map
 
----------------------
-
-## LammpsData
-
-This module can be used to read, write, manipulate Lammps Data file. 
-
-### Example
-
-```python
-import H5MD_Analysis as HA
-
-ld = HA.LammpsData()
-ld.read('lammps_data_file.dat')
-ld.AddAngle()
-ld.write('new_lammps_data_file.dat')
-```
-
-method `read` can be used to read Lammps Data file. The information in one data file is decomposed to two dictionary `LammpsData.headers` and `LammpsData.sections`. `headers` dictionary contains information like number of atoms, bonds, angles, box dimension, et al. `sections` dictionary contains information like `Masses`, `Atoms`, `Bonds`, et al. The description of data file at the first line of file can be retrieved by keyword `description` in `LammpsData.headers`.
-
-method `AddAngle` can be used to add angles between atoms in a atom index order. Like atom i, atom i+1, and atom i+2 form a angle. This method is used to change data file generated from simulation without angle potential to a data file with angles information, and then used to feed into simulation with angle potential.
-
-method `SetDescription` can be used to overwrite the description line.
-
-method `GetDataFrame` can be used to create a Pandas DataFrame object for every keyword in `LammpsData.sections`.
