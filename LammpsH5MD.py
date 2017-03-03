@@ -176,7 +176,10 @@ class LammpsH5MD:
                     frame_t2 = self.get_frame(t0)
                 for func in func_lst:
                     twotime_temp = func(frame_t1, frame_t2) # t1 > t2
-                    twotime[func].append([t0, t0+dt, twotime_temp]) # store the full information
+                    if isinstance(twotime_temp, (list, tuple, np.ndarray)):
+                        twotime[func].append(np.concatenate(([t0, t0+dt], twotime_temp)))
+                    else:
+                        twotime[func].append([t0, t0+dt, twotime_temp]) # store the full information
 
         t_end = time.time()
         t_cost = t_end - t_start
