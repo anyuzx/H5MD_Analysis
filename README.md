@@ -4,11 +4,11 @@
 
 This module is used for analyzing LAMMPS H5MD format dump trajectory file. The valid trajectory file can be analyzed must contains position or velocity hdf5 group. And the path of the group is accessed through `['particles/all/position]`. The module right now can calculate **Mean Square Displacement** and **Intermediate Scattering Function**. However custom function can be easily defined as integrated into this module, as long as the it's function of configuration of position of particles at time `t` and time `t+\tau`. And one is only interested in the average of quantity depends on `\tau`. For instance, **Mean Square Displacement** is one of the examples
 
-![](https://bgqomq-bn1305.files.1drv.com/y3ma_qrvcA0bpOrZB_oS8VaFSke_j64BCfFRwnHDoVSq-YJojYu3vwvp7iEHWE8m0AXgKiNospRy9rXePK2dOQ5LsSH7fSZUw2t-CO-FNtCLJyMuhQqywMS2xLlhhTwLa059X4_vcOB4uQFPInXw0gQ2zCG38esuLkNljDVSLZfHpI?width=256&height=55&cropmode=none)
+![](https://i.imgur.com/uxC79B8.png)
 
 The other example is **Intermediate Scattering Function**
 
-![](https://bgqjbg-bn1305.files.1drv.com/y3m7LFJ8-PE_iAUza3je3v2LisGtKLlBrtNL8jXMYQAXbomg9Fgf83bZqW-wcREmTvoIv2c-K_UqCl2xeqV7sNnVkXMi1vgVXycDmgfjg8pY96K1dECVvC9RaY5Sk6gn5GAPEqaUg8hhjETnotdEgLwOebgqyAS_8K-1KF1QSCa7Vk?width=256&height=53&cropmode=none)
+![](https://i.imgur.com/HvowUNJ.png)
 
 ### How to use
 
@@ -141,7 +141,7 @@ def isf(wave_vector, class_number):
     return lambda frame_t1, frame_t2: isf0(frame_t1, frame_t2, wave_vector, class_number)
 ```
 
-Notice that we define a lambda function above because our function depends on $\mathbf{k}$ and how many grid points we want to use in Lebedev quadrature. So we need to define a lambda function to pass a parameterized function to our `LammpsH5MD.cal_correlate()`. 
+Notice that we define a lambda function above because our function depends on $\mathbf{k}$ and how many grid points we want to use in Lebedev quadrature. So we need to define a lambda function to pass a parameterized function to our `LammpsH5MD.cal_correlate()`.
 
 #### Explanination of Arguments
 We will explain every arguments in `LammpsH5MD.cal_twotime` by an example. Suppose we have a trajectory file which has total 20001 frames.
@@ -160,7 +160,7 @@ LammpsH5MD.cal_twotime([msd.msd, isf.isf(4.0,26)], t0freq=10, dtnumber = 200, st
 #### Use parameter file
 We can use a parameter file to parse the arguments to `LammpsH5MD`. The parameter file use `YAML` syntax. For instance:
 
-```
+```yaml
 FILE: my_test_h5md.h5
 COMPUTE:
     - msd.g1:

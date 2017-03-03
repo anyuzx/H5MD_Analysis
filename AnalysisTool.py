@@ -157,6 +157,8 @@ if twotime_flag == 1:
     for key in write_dic:
         if func_name_lookup[key] in twotime_func_name_lst:
             with open(write_dic[key], 'w') as f:
+                if '.npy' in write_dic[key]:
+                    raise ValueError('.npy format is not supported when computing two-time quantity.\n')
                 f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
                 f.write('t0 t1 {}\n'.format(func_name_lookup[key]))
                 np.savetxt(f, twotime_data_dic[twofunc_dic[key]], delimiter=' ')

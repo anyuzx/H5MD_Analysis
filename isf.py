@@ -155,12 +155,27 @@ def Lebedev(n):
 
 # ===============================================================
 # define isf0 function
-def isf0(frame_t1, frame_t2, wave_vector, class_number):
+def isf0(frame_t1, frame_t2, wave_vector, class_number, index=None):
     grid = Lebedev(class_number)
-    temp = np.inner(frame_t1 - frame_t2, grid[:, 0:3])
-    temp = np.sum(np.cos(wave_vector * temp) * grid[:, -1], axis=1) # multiply by weight
-    return np.mean(temp)
+
+    if index is None:
+        # if no index specified. Then computation includes all particles
+        temp = np.inner(frame_t1 - frame_t2, grid[:, 0:3])
+        temp = np.sum(np.cos(wave_vector * temp) * grid[:, -1], axis=1) # multiply by weight
+        return np.mean(temp)
+    else:
+        # if index is specified, then loop through each index list, and return the result as multiple columns
+        if not isinstance(index, (list, tuple, np.ndarray)):
+            raise ValueError("argument [index] provided is not a list/tuple/array object.\n")
+
+        result = []
+        for atom_index in index:
+            atom_index = np.array(atom_index, dtype=np.int) - 1
+            temp = np.inner(frame_t1[atom_index] - frame_t2[atom_index], grid[:, 0:3])
+            temp = np.sum(np.cos(wave_vector * temp) * grid[:, -1], axis=1) # multiply by weight
+            result.append(np.mean(temp))
+        return np.array(result)
 
 # define isf lambda function, this is the actual functin passed to class LammpsH5MD routine
-def isf(wave_vector, class_number):
-    return lambda frame_t1, frame_t2: isf0(frame_t1, frame_t2, wave_vector, class_number)
+def isf(wave_vector, class_number, index=None):
+    return lambda frame_t1, frame_t2: isf0(frame_t1, frame_t2, wave_vector, class_number, index)
