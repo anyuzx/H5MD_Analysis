@@ -9,6 +9,7 @@ import rdp
 import sdp
 import contactevolution
 import loop_gyration_tensor
+import gyration_tensor
 import sys
 import yaml
 import datetime
