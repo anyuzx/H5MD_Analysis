@@ -41,7 +41,7 @@ loop_list[31][:] = [9510,9562]
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def compute_gyration_tensor(np.ndarray[DTYPE_t, ndim=2] frame):
+def compute_loop_gyration_tensor(np.ndarray[DTYPE_t, ndim=2] frame):
   cdef int N = frame.shape[0]
   cdef int dim = frame.shape[1]
 
