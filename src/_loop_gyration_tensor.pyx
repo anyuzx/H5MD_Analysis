@@ -47,7 +47,7 @@ def compute_loop_gyration_tensor(np.ndarray[DTYPE_t, ndim=2] frame):
 
   cdef int n_loop = 32
 
-  cdef np.ndarray[DTYPE_t, ndim = 3] gyration_tensor = np.zeros((n_loop, 3, 3), dtype=DTYPE)
+  cdef np.ndarray[DTYPE_t, ndim = 2] gyration_tensor = np.zeros((n_loop, 6), dtype=DTYPE)
   cdef int i, k
   cdef int loop_start, loop_end, loop_size
   cdef DTYPE_t xmean, ymean, zmean
@@ -59,15 +59,11 @@ def compute_loop_gyration_tensor(np.ndarray[DTYPE_t, ndim=2] frame):
     ymean = np.mean(frame[loop_start:loop_end+1], axis=0)[1]
     zmean = np.mean(frame[loop_start:loop_end+1], axis=0)[2]
     for k in xrange(loop_size - 1):
-      gyration_tensor[i,0,0] += (1.0/loop_size) * (frame[k+loop_start,0] - xmean) * (frame[k+loop_start,0] - xmean)
-      gyration_tensor[i,1,1] += (1.0/loop_size) * (frame[k+loop_start,1] - ymean) * (frame[k+loop_start,1] - ymean)
-      gyration_tensor[i,2,2] += (1.0/loop_size) * (frame[k+loop_start,2] - zmean) * (frame[k+loop_start,2] - zmean)
-      gyration_tensor[i,0,1] += (1.0/loop_size) * (frame[k+loop_start,0] - xmean) * (frame[k+loop_start,1] - ymean)
-      gyration_tensor[i,0,2] += (1.0/loop_size) * (frame[k+loop_start,0] - xmean) * (frame[k+loop_start,2] - zmean)
-      gyration_tensor[i,1,2] += (1.0/loop_size) * (frame[k+loop_start,1] - ymean) * (frame[k+loop_start,2] - zmean)
-
-      gyration_tensor[i,1,0] = gyration_tensor[i,0,1]
-      gyration_tensor[i,2,0] = gyration_tensor[i,0,2]
-      gyration_tensor[i,2,1] = gyration_tensor[i,1,2]
+      gyration_tensor[i,0] += (1.0/loop_size) * (frame[k+loop_start,0] - xmean) * (frame[k+loop_start,0] - xmean)
+      gyration_tensor[i,1] += (1.0/loop_size) * (frame[k+loop_start,1] - ymean) * (frame[k+loop_start,1] - ymean)
+      gyration_tensor[i,2] += (1.0/loop_size) * (frame[k+loop_start,2] - zmean) * (frame[k+loop_start,2] - zmean)
+      gyration_tensor[i,3] += (1.0/loop_size) * (frame[k+loop_start,0] - xmean) * (frame[k+loop_start,1] - ymean)
+      gyration_tensor[i,4] += (1.0/loop_size) * (frame[k+loop_start,0] - xmean) * (frame[k+loop_start,2] - zmean)
+      gyration_tensor[i,5] += (1.0/loop_size) * (frame[k+loop_start,1] - ymean) * (frame[k+loop_start,2] - zmean)
 
   return gyration_tensor
