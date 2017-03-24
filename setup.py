@@ -9,6 +9,7 @@ ext_modules = [Extension('core/_contactmap', ['src/_contactmap.pyx'], include_di
                Extension('core/_distmap',['src/_distmap.pyx'], include_dirs = [numpy.get_include()]),
                Extension('core/_contactevolution',['src/_contactevolution.pyx'],include_dirs = [numpy.get_include()]),
                Extension('core/_loop_gyration_tensor',['src/_loop_gyration_tensor.pyx'],include_dirs = [numpy.get_include()]),
+               Extension('core/_type_gyration_tensor',['src/_type_gyration_tensor.pyx'],include_dirs = [numpy.get_include()]),
                Extension('core/_gyration_tensor', ['src/_gyration_tensor.pyx'], include_dirs = [numpy.get_include()])]
 
 setup(
