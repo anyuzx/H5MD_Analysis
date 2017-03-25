@@ -14,9 +14,11 @@ def compute_gyration_tensor(np.ndarray[DTYPE_t, ndim=2] frame):
   cdef np.ndarray[DTYPE2_t, ndim = 1] slist = np.unique(np.int32(np.exp(np.linspace(np.log(2),np.log(N), 100))))
   cdef int slist_size = slist.shape[0]
 
-  cdef np.ndarray[DTYPE_t, ndim = 2] gyration_tensor = np.zeros((slist_size, 6), dtype=DTYPE)
+  cdef np.ndarray[DTYPE_t, ndim = 2] shape_array = np.zeros((slist_size, 3), dtype=DTYPE)
+  cdef np.ndarray[DTYPE_t, ndim = 2] rt_mtx = np.zeros((3,3), dtype=DTYPE)
   cdef int index, s, i, k
   cdef DTYPE_t xmean, ymean, zmean, rxx, ryy, rzz, rxy, rxz, ryz
+  cdef DTYPE_t rgsquare, ksquare, shape
   index = 0
   for s in slist:
     for i in xrange(N-s+1):
@@ -32,13 +34,25 @@ def compute_gyration_tensor(np.ndarray[DTYPE_t, ndim=2] frame):
         rxz += (1.0/s) * (frame[i+k, 0] - xmean) * (frame[i+k, 2] - zmean)
         ryz += (1.0/s) * (frame[i+k, 1] - ymean) * (frame[i+k, 2] - zmean)
 
-      gyration_tensor[index, 0] += rxx/(N-s+1)
-      gyration_tensor[index, 1] += ryy/(N-s+1)
-      gyration_tensor[index, 2] += rzz/(N-s+1)
-      gyration_tensor[index, 3] += rxy/(N-s+1)
-      gyration_tensor[index, 4] += rxz/(N-s+1)
-      gyration_tensor[index, 5] += ryz/(N-s+1)
+      rt_mtx[0,0] = rxx
+      rt_mtx[1,1] = ryy
+      rt_mtx[2,2] = rzz
+      rt_mtx[0,1] = rxy
+      rt_mtx[0,2] = rxz
+      rt_mtx[1,0] = rxy
+      rt_mtx[1,2] = ryz
+      rt_mtx[2,0] = rxz
+      rt_mtx[2,1] = ryz
+
+      eigenvalue = np.linalg.eigvalsh(rt_mtx)
+      rgsquare = np.sum(eigenvalue)
+      ksquare = 1.5*(np.sum(np.power(eigenvalue,2.0)))/(np.sum(eigenvalue))**2.0 - 0.5
+      shape = np.prod((eigenvalue - np.mean(eigenvalue))/np.mean(eigenvalue))
+
+      shape_array[index, 0] += rgsquare/(N-s+1)
+      shape_array[index, 1] += ksquare/(N-s+1)
+      shape_array[index, 2] += shape/(N-s+1)
 
     index += 1
 
-  return gyration_tensor
+  return shape_array

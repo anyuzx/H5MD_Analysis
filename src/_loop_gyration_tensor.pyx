@@ -47,10 +47,12 @@ def compute_loop_gyration_tensor(np.ndarray[DTYPE_t, ndim=2] frame):
 
   cdef int n_loop = 32
 
-  cdef np.ndarray[DTYPE_t, ndim = 2] gyration_tensor = np.zeros((n_loop, 6), dtype=DTYPE)
+  cdef np.ndarray[DTYPE_t, ndim = 2] shape_array = np.zeros((n_loop, 3), dtype=DTYPE)
+  cdef np.ndarray[DTYPE_t, ndim = 2] rt_mtx = np.zeros((3,3), dtype=DTYPE)
   cdef int i, k
   cdef int loop_start, loop_end, loop_size
-  cdef DTYPE_t xmean, ymean, zmean
+  cdef DTYPE_t xmean, ymean, zmean, rxx, ryy, rzz, rxy, rxz, ryz
+  cdef DTYPE_t rgsquare, ksquare, shape
   for i in xrange(n_loop):
     loop_start = loop_list[i][0] - 1
     loop_end = loop_list[i][1] - 1
@@ -58,12 +60,32 @@ def compute_loop_gyration_tensor(np.ndarray[DTYPE_t, ndim=2] frame):
     xmean = np.mean(frame[loop_start:loop_end+1], axis=0)[0]
     ymean = np.mean(frame[loop_start:loop_end+1], axis=0)[1]
     zmean = np.mean(frame[loop_start:loop_end+1], axis=0)[2]
+    rxx, ryy, rzz, rxy, rxz, ryz = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
     for k in xrange(loop_size - 1):
-      gyration_tensor[i,0] += (1.0/loop_size) * (frame[k+loop_start,0] - xmean) * (frame[k+loop_start,0] - xmean)
-      gyration_tensor[i,1] += (1.0/loop_size) * (frame[k+loop_start,1] - ymean) * (frame[k+loop_start,1] - ymean)
-      gyration_tensor[i,2] += (1.0/loop_size) * (frame[k+loop_start,2] - zmean) * (frame[k+loop_start,2] - zmean)
-      gyration_tensor[i,3] += (1.0/loop_size) * (frame[k+loop_start,0] - xmean) * (frame[k+loop_start,1] - ymean)
-      gyration_tensor[i,4] += (1.0/loop_size) * (frame[k+loop_start,0] - xmean) * (frame[k+loop_start,2] - zmean)
-      gyration_tensor[i,5] += (1.0/loop_size) * (frame[k+loop_start,1] - ymean) * (frame[k+loop_start,2] - zmean)
+      rxx += (1.0/loop_size) * (frame[k+loop_start,0] - xmean) * (frame[k+loop_start,0] - xmean)
+      ryy += (1.0/loop_size) * (frame[k+loop_start,1] - ymean) * (frame[k+loop_start,1] - ymean)
+      rzz += (1.0/loop_size) * (frame[k+loop_start,2] - zmean) * (frame[k+loop_start,2] - zmean)
+      rxy += (1.0/loop_size) * (frame[k+loop_start,0] - xmean) * (frame[k+loop_start,1] - ymean)
+      rxz += (1.0/loop_size) * (frame[k+loop_start,0] - xmean) * (frame[k+loop_start,2] - zmean)
+      ryz += (1.0/loop_size) * (frame[k+loop_start,1] - ymean) * (frame[k+loop_start,2] - zmean)
 
-  return gyration_tensor
+    rt_mtx[0,0] = rxx
+    rt_mtx[1,1] = ryy
+    rt_mtx[2,2] = rzz
+    rt_mtx[0,1] = rxy
+    rt_mtx[0,2] = rxz
+    rt_mtx[1,0] = rxy
+    rt_mtx[1,2] = ryz
+    rt_mtx[2,0] = rxz
+    rt_mtx[2,1] = ryz
+
+    eigenvalue = np.linalg.eigvalsh(rt_mtx)
+    rgsquare = np.sum(eigenvalue)
+    ksquare = 1.5*(np.sum(np.power(eigenvalue,2.0)))/(np.sum(eigenvalue))**2.0 - 0.5
+    shape = np.prod((eigenvalue - np.mean(eigenvalue))/np.mean(eigenvalue))
+
+    shape_array[i, 0] = rgsquare
+    shape_array[i, 1] = ksquare
+    shape_array[i, 2] = shape
+
+  return shape_array
