@@ -11,6 +11,7 @@ import contactevolution
 import loop_gyration_tensor
 import type_gyration_tensor
 import gyration_tensor
+import loop_orientation
 import sys
 import yaml
 import datetime
@@ -30,12 +31,14 @@ func_name_dic = {
     'cmapevolution': contactevolution.contactevolution,
     'loop_gyration_tensor': loop_gyration_tensor.loop_gyration_tensor,
     'type_gyration_tensor': type_gyration_tensor.type_gyration_tensor,
-    'gyration_tensor': gyration_tensor.gyration_tensor
+    'gyration_tensor': gyration_tensor.gyration_tensor,
+    'loop_orientation': loop_orientation.loop_orientation
 }
 
 twotime_func_name_lst = ['msd.g1', 'msd.g2', 'msd.g3', 'isf', 'cmapevolution']
 onetime_func_name_lst = ['cmap', 'rdp', 'sdp', 'dmap', 'dmap.square',\
-                        'loop_gyration_tensor','type_gyration_tensor','gyration_tensor']
+                        'loop_gyration_tensor','type_gyration_tensor','gyration_tensor',\
+                        'loop_orientation']
 # ===================================================================
 
 # ===================================================================
