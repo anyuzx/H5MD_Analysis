@@ -97,9 +97,9 @@ def compute_loop_orientation(np.ndarray[DTYPE_t, ndim=2] frame):
 
     long_axis_vector_array[i, 1] = eigenvector[1,-1]
     print "checkpoint2", eigenvector[1,-1]
-    long_axis_vector_array[i, 2] = eigenvector[1,-1]
+    long_axis_vector_array[i, 2] = eigenvector[2,-1]
     print "checkpoint3", eigenvector[2,-1]
-    long_axis_vector_array[i, 3] = eigenvector[2,-1]
+    long_axis_vector_array[i, 3] = eigenvector[3,-1]
     print "checkpoint4", eigenvector[3,-1]
 
   return long_axis_vector_array
