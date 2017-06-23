@@ -92,14 +92,9 @@ def compute_loop_orientation(np.ndarray[DTYPE_t, ndim=2] frame):
     rt_mtx[2,1] = ryz
 
     eigenvalue, eigenvector = np.linalg.eigh(rt_mtx)
-    print eigenvalue, eigenvector
-    print "checkpoint1", eigenvector[0,2], eigenvector[1,2], eigenvector[2,2]
 
     long_axis_vector_array[i, 0] = eigenvector[0,2]
-    print "checkpoint2", eigenvector[0,2]
     long_axis_vector_array[i, 1] = eigenvector[1,2]
-    print "checkpoint3", eigenvector[1,2]
     long_axis_vector_array[i, 2] = eigenvector[2,2]
-    print "checkpoint4", eigenvector[2,2]
 
   return long_axis_vector_array
