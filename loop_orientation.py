@@ -6,4 +6,4 @@ def loop_orientation(frame_t):
     if frame_t.dtype == 'float64':
         frame_t = np.float32(frame_t)
 
-    return _lgt.compute_loop_orientation(frame_t)
+    return _lo.compute_loop_orientation(frame_t)
