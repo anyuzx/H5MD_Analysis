@@ -2,6 +2,7 @@ import numpy as np
 import h5py
 import sys
 import time
+import os
 
 __all__ = ['LammpsH5MD']
 
@@ -162,7 +163,8 @@ class LammpsH5MD:
         t_start = time.time()
 
         for t0 in t0_lst:
-            #if screen_info:
+            if not screen_info:
+                sys.stdout = open(os.devnull, 'w')
             sys.stdout.write('Initial time {} analyzed.\n'.format(t0))
             sys.stdout.flush()
             for index, dt in enumerate(dt_lst[np.where(dt_lst <= (end-t0-1))]):
@@ -244,7 +246,8 @@ class LammpsH5MD:
         t_start = time.time()
 
         for t in t_lst:
-            #if screen_info:
+            if not screen_info:
+                sys.stdout = open(os.devnull, 'w')
             sys.stdout.write('Initial time {} analyzed.\n'.format(t))
             sys.stdout.flush()
             if align is not False:

@@ -7,6 +7,7 @@ import contactmap
 import distmap
 import rdp
 import sdp
+import ps
 import contactevolution
 import loop_gyration_tensor
 import type_gyration_tensor
@@ -26,6 +27,7 @@ func_name_dic = {
     'cmap': contactmap.contactmap,
     'rdp': rdp.rdp,
     'sdp': sdp.sdp,
+    'ps': ps.ps,
     'dmap': distmap.distmap,
     'dmap.square': distmap.distmap_square,
     'cmapevolution': contactevolution.contactevolution,
@@ -36,7 +38,7 @@ func_name_dic = {
 }
 
 twotime_func_name_lst = ['msd.g1', 'msd.g2', 'msd.g3', 'isf', 'cmapevolution']
-onetime_func_name_lst = ['cmap', 'rdp', 'sdp', 'dmap', 'dmap.square',\
+onetime_func_name_lst = ['cmap', 'rdp', 'sdp', 'ps', 'dmap', 'dmap.square',\
                         'loop_gyration_tensor','type_gyration_tensor','gyration_tensor',\
                         'loop_orientation']
 # ===================================================================
