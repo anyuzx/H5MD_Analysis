@@ -11,6 +11,10 @@ COMPUTE:
         id: 3
         args:
            cutoff: 2.0
+    - sdp_hist_square.sdphistsquare:
+        id: 4
+        args:
+           slist: [1,10,50]
 WRITE:
     - isf_g2.5_k5.0_short.txt:
         id: 1
@@ -18,6 +22,8 @@ WRITE:
         id: 2
     - cmap.npy:
         id: 3
+    - sdp_hist_square.npy:
+        id: 4
 ARGS_TWOTIME:
     t0freq: 100
     start: 0
