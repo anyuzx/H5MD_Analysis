@@ -6,7 +6,7 @@ import numpy
 
 ext_modules = [Extension('core/_contactmap', ['src/_contactmap.pyx'], include_dirs = [numpy.get_include()]),
                Extension('core/_sdp',['src/_sdp.pyx'], include_dirs = [numpy.get_include()]),
-               Extension('core/_sdp',['src/_sdp_hist.pyx'], include_dirs = [numpy.get_include()]),
+               Extension('core/_sdp_hist',['src/_sdp_hist.pyx'], include_dirs = [numpy.get_include()]),
                Extension('core/_ps',['src/_ps.pyx'], include_dirs = [numpy.get_include()]),
                Extension('core/_distmap',['src/_distmap.pyx'], include_dirs = [numpy.get_include()]),
                Extension('core/_contactevolution',['src/_contactevolution.pyx'],include_dirs = [numpy.get_include()]),
