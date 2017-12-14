@@ -7,6 +7,7 @@ import contactmap
 import distmap
 import rdp
 import sdp
+import sdp_hist_square
 import ps
 import contactevolution
 import loop_gyration_tensor
@@ -27,6 +28,7 @@ func_name_dic = {
     'cmap': contactmap.contactmap,
     'rdp': rdp.rdp,
     'sdp': sdp.sdp,
+    'sdp_hist_square': sdp_hist_square.sdphistsquare,
     'ps': ps.ps,
     'dmap': distmap.distmap,
     'dmap.square': distmap.distmap_square,
