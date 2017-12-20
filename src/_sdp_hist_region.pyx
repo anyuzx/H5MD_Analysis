@@ -30,7 +30,7 @@ def sdp_hist_square_region(np.ndarray[DTYPE_t, ndim=2] frame, double radius):
 	# compute the center of mass
 	cdef np.ndarray[DTYPE_t, ndim=2] com = np.mean(frame_t, axis=0)
 	# compute the distance between each beads to the center of mass
-	cdef np.ndarray[DTYPE_t, ndim=1] radial_dist = np.sqrt(np.sum(np.power(frame_t - com, 2.0), axis=1))
+	cdef np.ndarray[DTYPE_t, ndim=1] radial_dist = np.sqrt(np.sum(np.power(frame - com, 2.0), axis=1))
 
 	DISTANCE_LST = [[] for i in range(N-1)]
 
