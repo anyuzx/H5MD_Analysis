@@ -32,7 +32,7 @@ func_name_dic = {
     'rdp_atom': rdp_atom.rdp_atom,
     'sdp': sdp.sdp,
     'sdp_hist_square': sdp_hist_square.sdphistsquare,
-    'sdp_hist_square_region': sdp_hist_square_region.sdphistregion,
+    'sdp_hist_region': sdp_hist_region.sdphistregion,
     'ps': ps.ps,
     'dmap': distmap.distmap,
     'dmap.square': distmap.distmap_square,
