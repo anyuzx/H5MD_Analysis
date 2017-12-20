@@ -1,3 +1,17 @@
+"""
+_sdp_hist.pyx
+
+This module compute the distance/distance square between
+pairs of beads. 
+
+Argument:
+    slist: specify the list for all the s values
+s value is the linear saparation between beads.
+The distance between each pair of beads are stored
+instead of averageing over them. This result can
+be used to compute distance distribution.
+"""
+
 import numpy as np
 import cython
 cimport numpy as np
