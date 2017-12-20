@@ -4,11 +4,16 @@
 # can be used to calculate the radial density profile for multiple
 # types of atoms
 
+# if argument index is specified using 'all'. then the density profile is computed using all atoms.
+
 import numpy as np
 
 def rdp0(frame_t, index, rmax, dr):
-    if type(index) != list:
-        raise ValueError('index is not a list\n')
+    compute_all = False
+    if index == 'all':
+        compute_all = True
+    elif type(index) != list:
+        raise ValueError("index is not list. Please either specify the index or use 'all'\n")
 
     # get number of atoms in frame
     natoms = frame_t.shape[0]
@@ -22,10 +27,15 @@ def rdp0(frame_t, index, rmax, dr):
     actual_dr = bins_center[1] - bins_center[0]
 
     density = []
-    for atom_index in index:
-        atom_index = np.array(atom_index, dtype=np.int) - 1
-        hist, bin_edges = np.histogram(radial_dist[atom_index], bins=np.linspace(0.0, rmax, int(rmax/dr)))
-        density_temp = hist/(4*np.pi*(bins_center**2)*(atom_index.shape[0]/((4.0/3.0)*np.pi*rmax**3.0))*actual_dr)
+    if not compute_all:
+        for atom_index in index:
+            atom_index = np.array(atom_index, dtype=np.int) - 1
+            hist, bin_edges = np.histogram(radial_dist[atom_index], bins=np.linspace(0.0, rmax, int(rmax/dr)))
+            density_temp = hist/(4*np.pi*(bins_center**2)*(atom_index.shape[0]/((4.0/3.0)*np.pi*rmax**3.0))*actual_dr)
+            density.append(np.column_stack((bins_center, density_temp)))
+    else:
+        hist, bin_edges = np.histogram(radial_dist, bins = np.linspace(0.0, rmax, int(rmax/dr)))
+        density_temp = hist/(4*np.pi*(bins_center*2) * (natoms/((4.0/3.0)*np.pi*rmax**3.0))*actual_dr)
         density.append(np.column_stack((bins_center, density_temp)))
 
     return np.array(density)
