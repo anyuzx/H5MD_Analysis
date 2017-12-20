@@ -35,7 +35,7 @@ def rdp0(frame_t, index, rmax, dr):
             density.append(np.column_stack((bins_center, density_temp)))
     else:
         hist, bin_edges = np.histogram(radial_dist, bins = np.linspace(0.0, rmax, int(rmax/dr)))
-        density_temp = hist/(4*np.pi*(bins_center*2) * (natoms/((4.0/3.0)*np.pi*rmax**3.0))*actual_dr)
+        density_temp = hist/(4*np.pi*(bins_center**2) * (natoms/((4.0/3.0)*np.pi*rmax**3.0))*actual_dr)
         density.append(np.column_stack((bins_center, density_temp)))
 
     return np.array(density)
