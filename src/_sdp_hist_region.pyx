@@ -23,6 +23,7 @@ ctypedef np.int32_t DTYPE2_t
 @cython.wraparound(False)
 def sdp_hist_square_region(np.ndarray[DTYPE_t, ndim=2] frame, double radius):
 	cdef int N = frame.shape[0]
+	cdef int dim = frame.shape[1]
 	cdef i, j, l, k
 	cdef dsquare, tmp
 
