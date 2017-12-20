@@ -28,7 +28,7 @@ def sdp_hist_square_region(np.ndarray[DTYPE_t, ndim=2] frame, double radius):
 	cdef dsquare, tmp
 
 	# compute the center of mass
-	cdef np.ndarray[DTYPE_t, ndim=2] com = np.mean(frame, axis=0)
+	cdef np.ndarray[DTYPE_t, ndim=1] com = np.mean(frame, axis=0)
 	# compute the distance between each beads to the center of mass
 	cdef np.ndarray[DTYPE_t, ndim=1] radial_dist = np.sqrt(np.sum(np.power(frame - com, 2.0), axis=1))
 
@@ -37,18 +37,24 @@ def sdp_hist_square_region(np.ndarray[DTYPE_t, ndim=2] frame, double radius):
 	cdef int start = 0
 
 	while start <= N - 2:
-		for i in xrange(start + 1, N):
-			if radial_dist[i] <= radius:
-				for l in xrange(start, i):
-					dsquare = 0.0
-					for k in range(dim):
-						tmp = frame[l, k] - frame[i, k]
-						dsquare += tmp * tmp
-					DISTANCE_LST[i - l - 1].append(dsquare)
-			else:
-				for j in xrange(i + 1, N):
-					if radial_dist[j] <= radius:
-						start = j
-						break
+		if radial_dist[start] <= radius:
+			for i in xrange(start + 1, N):
+				if radial_dist[i] <= radius:
+					for l in xrange(start, i):
+						dsquare = 0.0
+						for k in range(dim):
+							tmp = frame[l, k] - frame[i, k]
+							dsquare += tmp * tmp
+						DISTANCE_LST[i - l - 1].append(dsquare)
+				else:
+					for j in xrange(i + 1, N):
+						if radial_dist[j] <= radius:
+							break
+					start = j
+					break			
+			if i == N-1:
+				break
+		else:
+			start += 1
 
 	return DISTANCE_LST
