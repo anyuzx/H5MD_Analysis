@@ -37,7 +37,7 @@ def sdp_hist_square_region(np.ndarray[DTYPE_t, ndim=2] frame, double radius):
 
 	while start <= N - 2:
 		for i in xrange(start + 1, N):
-			if radial_dist[i] < = radius:
+			if radial_dist[i] <= radius:
 				for l in xrange(start, i):
 					dsquare = 0.0
 					for k in range(dim):
