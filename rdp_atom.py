@@ -26,4 +26,4 @@ def rdp_atom0(frame_t, index):
         return radial_dist[index]
 
 def rdp_atom(index):
-    return lambda frame_t: rdp0(frame_t, index)
+    return lambda frame_t: rdp_atom0(frame_t, index)
