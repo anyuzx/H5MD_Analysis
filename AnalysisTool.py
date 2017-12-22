@@ -19,6 +19,7 @@ import loop_orientation
 import sys
 import yaml
 import datetime
+import pickle
 
 # ===================================================================
 # define a dictionary for function name look up
