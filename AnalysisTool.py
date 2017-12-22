@@ -106,6 +106,18 @@ def read_parameter(script):
         raise ValueError('Please specify the argument passed to COMPUTE\n')
 # ===================================================================
 
+# ===================================================================
+# Define function to save to pickle object
+# Saving to pickle format can be used to store non-regular python array/list
+# For instance:
+#   a = [[],[1],[2,1],['string']]
+# a can only be saved as pickle object
+# To use pickle, use the extension .pkl
+def save_obj(obj, name):
+    with open(name, 'wb') as f:
+        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+# ===================================================================
+
 
 # parse the arguments
 # usage:
@@ -175,9 +187,12 @@ if twotime_flag == 1:
             with open(write_dic[key], 'w') as f:
                 if '.npy' in write_dic[key]:
                     raise ValueError('.npy format is not supported when computing two-time quantity.\n')
-                f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
-                f.write('t0 t1 {}\n'.format(func_name_lookup[key]))
-                np.savetxt(f, twotime_data_dic[twofunc_dic[key]], delimiter=' ')
+                elif '.pkl' in write_dic[key]:
+                    save_obj(twotime_data_dic[twofunc_dic[key]], write_dic[key])
+                else:
+                    f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
+                    f.write('t0 t1 {}\n'.format(func_name_lookup[key]))
+                    np.savetxt(f, twotime_data_dic[twofunc_dic[key]], delimiter=' ')
 
 
 # one-time quantity calculation
@@ -191,6 +206,8 @@ if onetime_flag == 1:
             with open(write_dic[key], 'w') as f:
                 if '.npy' in write_dic[key]:
                     np.save(f, onetime_data_dic[onefunc_dic[key]])
+                elif '.pkl' in write_dic[key]:
+                    save_obj(onetime_data_dic[onefunc_dic[key]], write_dic[key])
                 else:
                     f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
                     np.savetxt(f, onetime_data_dic[onefunc_dic[key]])
