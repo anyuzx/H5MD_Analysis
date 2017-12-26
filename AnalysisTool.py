@@ -8,6 +8,7 @@ import distmap
 import rdp
 import rdp_atom
 import sdp
+import sdp_square
 import sdp_hist_square
 import sdp_hist_region
 import ps
@@ -32,6 +33,7 @@ func_name_dic = {
     'rdp': rdp.rdp,
     'rdp_atom': rdp_atom.rdp_atom,
     'sdp': sdp.sdp,
+    'sdp_square': sdp_square.sdp_square,
     'sdp_hist_square': sdp_hist_square.sdphistsquare,
     'sdp_hist_region': sdp_hist_region.sdphistregion,
     'ps': ps.ps,
@@ -45,9 +47,9 @@ func_name_dic = {
 }
 
 twotime_func_name_lst = ['msd.g1', 'msd.g2', 'msd.g3', 'isf', 'cmapevolution']
-onetime_func_name_lst = ['cmap', 'rdp', 'rdp_atom', 'sdp', 'sdp_hist_square', 'sdp_hist_region', 'ps', \
+onetime_func_name_lst = ['cmap', 'rdp', 'rdp_atom', 'sdp', 'sdp_square', 'sdp_hist_square', 'sdp_hist_region', 'ps', \
                          'dmap', 'dmap.square','loop_gyration_tensor','type_gyration_tensor','gyration_tensor',\
-                        'loop_orientation']
+                         'loop_orientation']
 # ===================================================================
 
 # ===================================================================
