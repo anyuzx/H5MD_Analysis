@@ -30,7 +30,7 @@ func_name_dic = {
     'msd.g1': msd.g1,
     'msd.g2': msd.g2,
     'msd.g3': msd.g3,
-    'ree_corr': ree_correlation.ree_corr,
+    'ree_correlation': ree_correlation.ree_corr,
     'isf': isf.isf,
     'cmap': contactmap.contactmap,
     'rdf': rdf.rdf,
