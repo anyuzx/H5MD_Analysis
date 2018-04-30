@@ -2,9 +2,11 @@ import numpy as np
 import argparse
 import LammpsH5MD
 import msd
+import ree_correlation
 import isf
 import contactmap
 import distmap
+import rdf
 import rdp
 import rdp_atom
 import sdp
@@ -28,8 +30,10 @@ func_name_dic = {
     'msd.g1': msd.g1,
     'msd.g2': msd.g2,
     'msd.g3': msd.g3,
+    'ree_corr': ree_correlation.ree_corr,
     'isf': isf.isf,
     'cmap': contactmap.contactmap,
+    'rdf': rdf.rdf,
     'rdp': rdp.rdp,
     'rdp_atom': rdp_atom.rdp_atom,
     'sdp': sdp.sdp,
@@ -46,8 +50,8 @@ func_name_dic = {
     'loop_orientation': loop_orientation.loop_orientation
 }
 
-twotime_func_name_lst = ['msd.g1', 'msd.g2', 'msd.g3', 'isf', 'cmapevolution']
-onetime_func_name_lst = ['cmap', 'rdp', 'rdp_atom', 'sdp', 'sdp_square', 'sdp_hist_square', 'sdp_hist_region', 'ps', \
+twotime_func_name_lst = ['msd.g1', 'msd.g2', 'msd.g3', 'ree_correlation', 'isf', 'cmapevolution']
+onetime_func_name_lst = ['cmap', 'rdf', 'rdp', 'rdp_atom', 'sdp', 'sdp_square', 'sdp_hist_square', 'sdp_hist_region', 'ps', \
                          'dmap', 'dmap.square','loop_gyration_tensor','type_gyration_tensor','gyration_tensor',\
                          'loop_orientation']
 # ===================================================================
