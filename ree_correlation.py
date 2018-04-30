@@ -24,5 +24,5 @@ def ree_corr0(frame_t1, frame_t2, index1=None, index2=None):
 	
 	return corr
 
-def ree_corr(index1, index2):
+def ree_corr(index1=None, index2=None):
 	return lambda frame_t1, frame_t2: ree_corr0(frame_t1, frame_t2, index1, index2)
