@@ -1,6 +1,5 @@
 ## TODO list for the future
 
-- [ ] Implement histogram on stream method for computing RDF
 - [x] Complete `sk_lebedev.py` module
 - [x] add `sk.py` module to compute static structural factor using Debye
       scattering formula
@@ -13,4 +12,3 @@
   - [x] test it
 - [x] write information on LammpsData in README file
 - [x] add function to calculate the gyration tensor of each loop region
-
