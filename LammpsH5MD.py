@@ -58,7 +58,7 @@ class OnlineVariance:
     def stream(self, data_point):
         self.n += 1
         self.delta = data_point - self.mean
-        self.mean += self.delta / float(self.n)
+        self.mean += self.delta / self.n
         self.S += self.delta * (data_point - self.mean)
         self.var = self.S / (self.n - 1.0)
         return self.mean, self.var
@@ -69,12 +69,30 @@ class LammpsH5MD:
         self.file = self.filename = None
         self.frame_number = None
         self.atoms_number = None
+        self.box = None
 
     def load(self, finname):
         # load the trajectory
         try:
             self.filename = finname
             self.file = h5py.File(finname, 'r')
+        except:
+            raise
+
+        self.get_framenumber()
+        self.get_atomnumber()
+        self.get_box()
+        self.get_species()
+
+    def get_species(self):
+        try:
+            self.species = self.file['particles/all/species'][:]
+        except:
+            raise
+
+    def get_box(self):
+        try:
+            self.box = self.file['particles/all/box/edges/value'][0]
         except:
             raise
 
@@ -245,6 +263,8 @@ class LammpsH5MD:
 
         t_start = time.time()
 
+        temp = {}
+
         for t in t_lst:
             if not screen_info:
                 sys.stdout = open(os.devnull, 'w')
@@ -266,8 +286,7 @@ class LammpsH5MD:
                     try:
                         temp[func].stream(onetime_temp)
                         onetime[func] = temp[func].mean
-                    except NameError:
-                        temp = {}
+                    except:
                         temp[func] = OnlineVariance(dim=onetime_temp.shape)
                         temp[func].stream(onetime_temp)
                         onetime[func] = temp[func].mean
@@ -275,8 +294,7 @@ class LammpsH5MD:
                     try:
                         temp[func].stream(onetime_temp)
                         onetime[func] = temp[func].var
-                    except NameError:
-                        temp = {}
+                    except:
                         temp[func] = OnlineVariance(dim=onetime_temp.shape)
                         temp[func].stream(onetime_temp)
                         onetime[func] = temp[func].var
