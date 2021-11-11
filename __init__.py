@@ -5,5 +5,6 @@ from . import core
 from .sk_debye import sk_debye
 from .sk_debye import sk_histogram_method
 from .sk_lebedev import sk_lebedev
+from .sk_direct import sk_direct
 from .rdf import rdf
 

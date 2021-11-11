@@ -3,6 +3,7 @@ import h5py
 import sys
 import time
 import os
+from tqdm import tqdm
 
 __all__ = ['LammpsH5MD']
 
@@ -180,7 +181,7 @@ class LammpsH5MD:
             frame_start = self.file['particles/all/position/value'][align]
         t_start = time.time()
 
-        for t0 in t0_lst:
+        for t0 in tqdm(t0_lst):
             if not screen_info:
                 sys.stdout = open(os.devnull, 'w')
             sys.stdout.write('Initial time {} analyzed.\n'.format(t0))
@@ -265,7 +266,7 @@ class LammpsH5MD:
 
         temp = {}
 
-        for t in t_lst:
+        for t in tqdm(t_lst):
             if not screen_info:
                 sys.stdout = open(os.devnull, 'w')
             sys.stdout.write('Initial time {} analyzed.\n'.format(t))
