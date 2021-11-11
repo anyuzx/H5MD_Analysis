@@ -3,6 +3,7 @@
 import cython
 import numpy as np
 cimport numpy as np
+from cython.parallel import prange
 
 from libc.math cimport sqrt
 from libc.math cimport cos
@@ -40,7 +41,7 @@ def sk_direct_self(double [:,:] positions not None, double kmax, double [:] l no
     cdef double k_magnitude, kr_product, kx, ky, kz
     cdef Py_ssize_t ikx, iky, ikz, i, q
 
-    for ikx in range(nkx):
+    for ikx in prange(nkx, nogil=True):
         for iky in range(nky):
             for ikz in range(nkz):
                 q = ikx * nky * nkz + iky * nkz + ikz
@@ -96,7 +97,7 @@ def sk_direct_cross(double [:,:] positions1 not None, double [:,:] positions2 no
     cdef double k_magnitude, kr_product, kx, ky, kz
     cdef Py_ssize_t ikx, iky, ikz, i, q
 
-    for ikx in range(nkx):
+    for ikx in prange(nkx, nogil=True):
         for iky in range(nky):
             for ikz in range(nkz):
                 q = ikx * nky * nkz + iky * nkz + ikz
