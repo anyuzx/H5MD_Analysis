@@ -40,6 +40,13 @@ ext_modules = [Extension('_contactmap', ['src/_contactmap.pyx'], include_dirs = 
                 include_dirs=['/usr/include/',numpy.get_include()],
                 extra_compile_args=['-O3', '-ffast-math', '-fopenmp'],
                 extra_link_args=['-fopenmp'],
+                language='c++'),\
+              Extension(name="_rdf",
+                sources=["src/_rdf.pyx"],
+                library_dirs=['/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/'],
+                include_dirs=['/usr/include/',numpy.get_include()],
+                extra_compile_args=['-O3', '-ffast-math', '-fopenmp'],
+                extra_link_args=['-fopenmp'],
                 language='c++')
   ]
 

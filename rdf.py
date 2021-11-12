@@ -8,6 +8,7 @@
 import numpy as np
 import scipy.spatial
 from .core import _pdist_pbc
+from .core import _rdf
 
 def rdf0(frame_t, index1, index2, rmax, bins, V, pbc, box):
     if V is None and box is None:
@@ -62,3 +63,16 @@ def rdf0(frame_t, index1, index2, rmax, bins, V, pbc, box):
 
 def rdf(index1, index2, rmax, bins, V=None, pbc=False, box=None):
     return lambda frame_t: rdf0(frame_t, index1, index2, rmax, bins, V, pbc, box)
+
+def rdf_cython0(frame_t, index, rmax, bins, box):
+    xlo, xhi, ylo, yhi, zlo, zhi = box[0,0], box[0,1], box[1,0], box[1,1], box[2,0], box[2,1]
+
+    frame_t_shift = frame_t - np.array([xlo, ylo, zlo])
+
+    bin_edges = np.linspace(0, rmax, bins+1)
+
+    gr = _rdf.rdf_self(frame_t_shift[index], rmax, int(bins), box)
+    return np.column_stack((bin_edges[1:], gr))
+
+def rdf_cython(index, rmax, bins, box):
+    return lambda frame_t: rdf_cython0(frame_t, index, rmax, bins, box)

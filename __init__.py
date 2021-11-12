@@ -7,4 +7,5 @@ from .sk_debye import sk_histogram_method
 from .sk_lebedev import sk_lebedev
 from .sk_direct import sk_direct
 from .rdf import rdf
+from .rdf import rdf_cython
 
