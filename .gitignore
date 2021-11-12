@@ -42,3 +42,5 @@ Thumbs.db
 
 # ignore the folder generated vim python-mode
 .ropeproject
+.ipynb_checkpoints
+testing.ipynb
