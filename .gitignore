@@ -44,3 +44,4 @@ Thumbs.db
 .ropeproject
 .ipynb_checkpoints
 testing.ipynb
+.vscode
