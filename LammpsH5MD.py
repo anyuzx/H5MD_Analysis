@@ -70,6 +70,7 @@ class LammpsH5MD:
         self.file = self.filename = None
         self.frame_number = None
         self.atoms_number = None
+        self.mols_number = None
         self.box = None
 
     def load(self, finname):
@@ -82,6 +83,7 @@ class LammpsH5MD:
 
         self.get_framenumber()
         self.get_atomnumber()
+        self.get_molnumber()
         self.get_box()
         self.get_species()
 
@@ -108,6 +110,12 @@ class LammpsH5MD:
         # get the total number of atoms/particles stored in file
         try:
             self.atoms_number = self.file['particles/all/position/value'].shape[1]
+        except:
+            raise
+    
+    def get_molnumber(self):
+        try:
+            self.mols_number = int(self.file['particles/all/mol/value'][0].max())
         except:
             raise
 
