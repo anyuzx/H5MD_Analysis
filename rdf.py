@@ -76,3 +76,40 @@ def rdf_cython0(frame_t, index, rmax, bins, box):
 
 def rdf_cython(index, rmax, bins, box):
     return lambda frame_t: rdf_cython0(frame_t, index, rmax, bins, box)
+
+def rdf_intermolecular_cython0(frame_t, index1, index2, mol_index1, mol_index2, rmax, bins, box, region=None):
+    xlo, xhi, ylo, yhi, zlo, zhi = box[0,0], box[0,1], box[1,0], box[1,1], box[2,0], box[2,1]
+
+    frame_t_select1 = frame_t[index1]
+    frame_t_select2 = frame_t[index2]
+
+    mol_index1_select = np.copy(mol_index1)
+    mol_index2_select = np.copy(mol_index2)
+
+    if region is not None:
+        V = (yhi - ylo) * (xhi - xlo) * (region[1] - region[0])
+    else:
+        V = (yhi - ylo) * (xhi - xlo) * (zhi - zlo)
+
+
+    if region is not None:
+        select_boolean_1 = (frame_t_select1[:,2] >= region[0]) & (frame_t_select1[:,2] <= region[1])
+        select_boolean_2 = (frame_t_select2[:,2] >= region[0]) & (frame_t_select2[:,2] <= region[1])
+
+        frame_t_select1 = frame_t_select1[select_boolean_1]
+        frame_t_select2 = frame_t_select2[select_boolean_2]
+
+        mol_index1_select = mol_index1[select_boolean_1]
+        mol_index2_select = mol_index2[select_boolean_2]
+
+    # shift the coordinates for periodic boundary computation
+    frame_t_select1 = frame_t_select1 - np.array([xlo, ylo, zlo])
+    frame_t_select2 = frame_t_select2 - np.array([xlo, ylo, zlo])
+
+    bin_edges = np.linspace(0, rmax, bins+1)
+
+    gr = _rdf.rdf_pair_intermolecular(frame_t_select1, frame_t_select2, mol_index1_select, mol_index2_select, rmax, int(bins), box, V)
+    return np.column_stack((bin_edges[1:], gr))
+
+def rdf_intermolecular_cython(index1, index2, mol_index1, mol_index2, rmax, bins, box, region):
+    return lambda frame_t: rdf_intermolecular_cython0(frame_t, index1, index2, mol_index1, mol_index2, rmax, bins, box, region)

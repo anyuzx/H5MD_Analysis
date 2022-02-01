@@ -86,6 +86,7 @@ class LammpsH5MD:
         self.get_molnumber()
         self.get_box()
         self.get_species()
+        self.get_mol_index()
 
     def get_species(self):
         try:
@@ -112,7 +113,13 @@ class LammpsH5MD:
             self.atoms_number = self.file['particles/all/position/value'].shape[1]
         except:
             raise
-    
+
+    def get_mol_index(self):
+        try:
+            self.mol_index = np.int_(self.file['particles/all/mol/value'][0])
+        except:
+            raise
+
     def get_molnumber(self):
         try:
             self.mols_number = int(self.file['particles/all/mol/value'][0].max())
