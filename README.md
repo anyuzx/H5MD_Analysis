@@ -2,13 +2,17 @@
 
 ## LammpsH5MD
 
-This module is used for analyzing LAMMPS H5MD format dump trajectory file. The valid trajectory file can be analyzed must contains position or velocity hdf5 group. And the path of the group is accessed through `['particles/all/position]`. The module right now can calculate **Mean Square Displacement** and **Intermediate Scattering Function**. However custom function can be easily defined as integrated into this module, as long as the it's function of configuration of position of particles at time `t` and time `t+\tau`. And one is only interested in the average of quantity depends on `\tau`. For instance, **Mean Square Displacement** is one of the examples
+This module is used for analyzing LAMMPS H5MD format dump trajectory file. The valid trajectory file can be analyzed must contains position or velocity HDF5 group. And the path of the group is accessed through `['particles/all/position]`. The main function of this module is to calculate one-time quantity or two-time correlation quantity from a given LAMMPS H5MD format trajectory file. The examples for one-time quantity includes density profile, contact map, distance map, radial distribution functions, structural factors, etc. Two-time correlation quantity include mean squared displacement, dynamic scattering function, etc. The module is designed such that custom function can be defined as separate plug-in module and easily be used. The only requirement for any custom function is that it's a function of position of particles at time $t$ for one-time quantity or $t$ and $t+\tau$ for two-time quantity. The examples of two-time correlation quantity for *mean squared displacement* is given below,
 
-![](https://i.imgur.com/uxC79B8.png)
+$$
+\mathrm{MSD} = \frac{1}{N}\bigg\langle \sum_{i}^{N} (\boldsymbol{r}_i(t) - \boldsymbol{r}_i(0))^2 \bigg\rangle
+$$
 
-The other example is **Intermediate Scattering Function**
+and *intermediate scattering function*,
 
-![](https://i.imgur.com/HvowUNJ.png)
+$$
+F_s(\boldsymbol{k},t)=\frac{1}{N}\bigg\langle \sum_{i}^{N} e^{i \boldsymbol{k}(\boldsymbol{r}_i(t) - \boldsymbol{r}_i(0))} \bigg\rangle
+$$
 
 ### How to use
 
