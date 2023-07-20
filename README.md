@@ -14,6 +14,20 @@ $$
 F_s(\boldsymbol{k},t)=\frac{1}{N}\bigg\langle \sum_{i}^{N} e^{i \boldsymbol{k}(\boldsymbol{r}_i(t) - \boldsymbol{r}_i(0))} \bigg\rangle
 $$
 
+### The current built-in function to calculate
+**One-time**
+- Contact map
+- Density profile
+- Distance map
+- Radius of gyration tensor
+- Radial distribution function
+- Structural factors
+- End-to-end distance
+
+**Two-time**
+- Mean squared displacement
+- Intermediate scattering function
+
 ### How to use
 
 The main program is `LammpsH5MD.py`. It defines the class `LammpsH5MD` which is used to read and process H5MD file. It has several class members.
