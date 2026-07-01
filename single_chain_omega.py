@@ -2,7 +2,10 @@
 import numpy as np
 import scipy
 import scipy.spatial
-from .core import _pdist_pbc
+try:
+    from .core import _pdist_pbc
+except ImportError:
+    from core import _pdist_pbc
 from tqdm import tqdm
 
 def xyz2omega(xyz1, xyz2, karray, l):

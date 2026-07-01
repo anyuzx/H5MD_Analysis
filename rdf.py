@@ -7,8 +7,12 @@
 
 import numpy as np
 import scipy.spatial
-from .core import _pdist_pbc
-from .core import _rdf
+try:
+    from .core import _pdist_pbc
+    from .core import _rdf
+except ImportError:
+    from core import _pdist_pbc
+    from core import _rdf
 
 def rdf0(frame_t, index1, index2, rmax, bins, V, pbc, box):
     if V is None and box is None:

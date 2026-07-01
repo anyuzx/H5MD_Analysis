@@ -1,11 +1,14 @@
 import numpy as np
-from core import _contactevolution as _cmapevolution
+try:
+    from .core import _contactevolution as _cmapevolution
+except ImportError:
+    from core import _contactevolution as _cmapevolution
 
 def contactevolution0(frame_t1, frame_t2, cutoff):
-    if frame_t1.dtype == 'float64':
-        frame_t1 = np.float32(frame_t1)
-    if frame_t2.dtype == 'float64':
-        frame_t2 = np.float32(frame_t2)
+    if frame_t1.dtype == np.float64:
+        frame_t1 = frame_t1.astype(np.float32, copy=False)
+    if frame_t2.dtype == np.float64:
+        frame_t2 = frame_t2.astype(np.float32, copy=False)
 
     return _cmapevolution.contactmapevolution(frame_t1, frame_t2, cutoff)
 

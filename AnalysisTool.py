@@ -1,25 +1,49 @@
 import numpy as np
 import argparse
-import LammpsH5MD
-import msd
-import ree_correlation
-import isf
-import contactmap
-import distmap
-import rdf
-import rdp
-import rdp_atom
-import sdp
-import sdp_square
-import sdp_hist_square
-import sdp_hist_region
-import ps
-import contactevolution
-import loop_gyration_tensor
-import type_gyration_tensor
-import gyration_tensor
-import loop_orientation
+import importlib
+
+if __package__:
+    LammpsH5MD = importlib.import_module(f'{__package__}.LammpsH5MD')
+    msd = importlib.import_module(f'{__package__}.msd')
+    ree_correlation = importlib.import_module(f'{__package__}.ree_correlation')
+    isf = importlib.import_module(f'{__package__}.isf')
+    contactmap = importlib.import_module(f'{__package__}.contactmap')
+    distmap = importlib.import_module(f'{__package__}.distmap')
+    rdf = importlib.import_module(f'{__package__}.rdf')
+    rdp = importlib.import_module(f'{__package__}.rdp')
+    rdp_atom = importlib.import_module(f'{__package__}.rdp_atom')
+    sdp = importlib.import_module(f'{__package__}.sdp')
+    sdp_square = importlib.import_module(f'{__package__}.sdp_square')
+    sdp_hist_square = importlib.import_module(f'{__package__}.sdp_hist_square')
+    sdp_hist_region = importlib.import_module(f'{__package__}.sdp_hist_region')
+    ps = importlib.import_module(f'{__package__}.ps')
+    contactevolution = importlib.import_module(f'{__package__}.contactevolution')
+    loop_gyration_tensor = importlib.import_module(f'{__package__}.loop_gyration_tensor')
+    type_gyration_tensor = importlib.import_module(f'{__package__}.type_gyration_tensor')
+    gyration_tensor = importlib.import_module(f'{__package__}.gyration_tensor')
+    loop_orientation = importlib.import_module(f'{__package__}.loop_orientation')
+else:
+    import LammpsH5MD
+    import msd
+    import ree_correlation
+    import isf
+    import contactmap
+    import distmap
+    import rdf
+    import rdp
+    import rdp_atom
+    import sdp
+    import sdp_square
+    import sdp_hist_square
+    import sdp_hist_region
+    import ps
+    import contactevolution
+    import loop_gyration_tensor
+    import type_gyration_tensor
+    import gyration_tensor
+    import loop_orientation
 import sys
+import os
 import yaml
 import datetime
 import pickle
@@ -73,13 +97,13 @@ def read_parameter(script):
     global twotime_flag
     global onetime_flag
 
-    for key, value in script.iteritems():
+    for key, value in script.items():
         if key == 'FILE':
             finname = value
         elif key == 'COMPUTE':
             func_name_lookup = {}
             for func in value:
-                for func_name, info in func.iteritems():
+                for func_name, info in func.items():
                     func_name_lookup[info['id']] = func_name
                     if func_name not in twotime_func_name_lst and func_name not in onetime_func_name_lst:
                         raise NameError('Unknown function {}. Supported function: {}\n'.format(func_name, func_name_dic.keys()))
@@ -97,7 +121,7 @@ def read_parameter(script):
                             onefunc_dic[info['id']] = func_name_dic[func_name]
         elif key == 'WRITE':
             for write in value:
-                for write_name, info in write.iteritems():
+                for write_name, info in write.items():
                     write_dic[info['id']] = write_name
 
     if 'ARGS_TWOTIME' in script and 'ARGS_ONETIME' not in script:
@@ -126,95 +150,97 @@ def save_obj(obj, name):
 # ===================================================================
 
 
-# parse the arguments
-# usage:
-#   python AnalysisTool.py parameter_script.txt -q
-#   first argument: script parameter file.
-#   --quite(-q): not output the information on screeen
+def main():
+    # parse the arguments
+    # usage:
+    #   python AnalysisTool.py parameter_script.txt -q
+    #   first argument: script parameter file.
+    #   --quite(-q): not output the information on screeen
+    parser = argparse.ArgumentParser(description='H5MD trajectory file analysis tool')
+    parser.add_argument('parameter_file', help='parameter script file')
+    parser.add_argument('-q', '--quite', help='enable/disable quite execution', action='store_false', default=True, dest='screen_info')
+    parser.add_argument('-l', '--log',  help='output to log files.', dest='logfile')
+    args = parser.parse_args()
 
-parser = argparse.ArgumentParser(description='H5MD trajectory file analysis tool')
-parser.add_argument('parameter_file', help='parameter script file')
-parser.add_argument('-q', '--quite', help='enable/disable quite execution', action='store_false', default=True, dest='screen_info')
-parser.add_argument('-l', '--log',  help='output to log files.', dest='logfile')
-args = parser.parse_args()
+    # report error if both args.quite and args.logfile are required
+    if not args.screen_info and args.logfile:
+        sys.stdout.write('ERROR: Both quite and log argument are specified. Program terminated.\n')
+        sys.stdout.flush()
+        sys.exit(0)
 
-# report error if both args.quite and args.logfile are required
-if not args.screen_info and args.logfile:
-    sys.stdout.write('ERROR: Both quite and log argument are specified. Program terminated.\n')
-    sys.stdout.flush()
-    sys.exit(0)
+    # redirect stdout to log file if specified
+    if args.logfile:
+        sys.stdout = open(args.logfile, 'w')
+    elif not args.screen_info:
+        sys.stdout = open(os.devnull, 'w')
 
-# redirect stdout to log file if specified
-if args.logfile:
-    sys.stdout = open(args.logfile, 'w')
-elif not args.screen_info:
-    sys.stdout = open(os.devnull, 'w')
+    # parameters file is written use YAML syntax
+    # load the parameters file using yaml
+    with open(args.parameter_file, 'r') as f:
+        parameters = yaml.safe_load(f)
 
-# parameters file is written use YAML syntax
-# load the parameters file using yaml
-with open(args.parameter_file, 'r') as f:
-    parameters = yaml.load(f)
+    # Get the parameters
+    parameters_result_lst = read_parameter(parameters)
+    if twotime_flag == 1 and onetime_flag == 0:
+        finname = parameters_result_lst[0]
+        twotime_kwargs = parameters_result_lst[1]
+        func_name_lookup = parameters_result_lst[2]
+        write_dic = parameters_result_lst[3]
+        twofunc_dic = parameters_result_lst[4]
+    elif twotime_flag == 0 and onetime_flag == 1:
+        finname = parameters_result_lst[0]
+        onetime_kwargs = parameters_result_lst[1]
+        func_name_lookup = parameters_result_lst[2]
+        write_dic = parameters_result_lst[3]
+        onefunc_dic = parameters_result_lst[4]
+    elif twotime_flag == 1 and onetime_flag == 1:
+        finname = parameters_result_lst[0]
+        twotime_kwargs = parameters_result_lst[1]
+        onetime_kwargs = parameters_result_lst[2]
+        func_name_lookup = parameters_result_lst[3]
+        write_dic = parameters_result_lst[4]
+        twofunc_dic = parameters_result_lst[5]
+        onefunc_dic = parameters_result_lst[6]
 
-# Get the parameters
-parameters_result_lst = read_parameter(parameters)
-if twotime_flag == 1 and onetime_flag == 0:
-    finname = parameters_result_lst[0]
-    twotime_kwargs = parameters_result_lst[1]
-    func_name_lookup = parameters_result_lst[2]
-    write_dic = parameters_result_lst[3]
-    twofunc_dic = parameters_result_lst[4]
-elif twotime_flag == 0 and onetime_flag == 1:
-    finname = parameters_result_lst[0]
-    onetime_kwargs = parameters_result_lst[1]
-    func_name_lookup = parameters_result_lst[2]
-    write_dic = parameters_result_lst[3]
-    onefunc_dic = parameters_result_lst[4]
-elif twotime_flag == 1 and onetime_flag == 1:
-    finname = parameters_result_lst[0]
-    twotime_kwargs = parameters_result_lst[1]
-    onetime_kwargs = parameters_result_lst[2]
-    func_name_lookup = parameters_result_lst[3]
-    write_dic = parameters_result_lst[4]
-    twofunc_dic = parameters_result_lst[5]
-    onefunc_dic = parameters_result_lst[6]
+    traj = LammpsH5MD.LammpsH5MD()    # create LammpsH5MD class
+    traj.load(finname)     # load the trajectory
+
+    # do the calculation
+    # two-time quantity calculation
+    if twotime_flag == 1:
+        twotime_data_dic = traj.cal_twotime(list(twofunc_dic.values()), screen_info=args.screen_info, **twotime_kwargs)
+        twotime_output_name_lst = []
+        for key in twofunc_dic.keys():
+            twotime_output_name_lst.append(write_dic[key])
+        for key in write_dic:
+            if func_name_lookup[key] in twotime_func_name_lst:
+                with open(write_dic[key], 'w') as f:
+                    if '.npy' in write_dic[key]:
+                        raise ValueError('.npy format is not supported when computing two-time quantity.\n')
+                    elif '.pkl' in write_dic[key]:
+                        save_obj(twotime_data_dic[twofunc_dic[key]], write_dic[key])
+                    else:
+                        f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
+                        f.write('t0 t1 {}\n'.format(func_name_lookup[key]))
+                        np.savetxt(f, twotime_data_dic[twofunc_dic[key]], delimiter=' ')
+
+    # one-time quantity calculation
+    if onetime_flag == 1:
+        onetime_data_dic = traj.cal_onetime(list(onefunc_dic.values()), screen_info=args.screen_info, **onetime_kwargs)
+        onetime_output_name_lst = []
+        for key in onefunc_dic.keys():
+            onetime_output_name_lst.append(write_dic[key])
+        for key in write_dic:
+            if func_name_lookup[key] in onetime_func_name_lst:
+                with open(write_dic[key], 'w') as f:
+                    if '.npy' in write_dic[key]:
+                        np.save(f, onetime_data_dic[onefunc_dic[key]])
+                    elif '.pkl' in write_dic[key]:
+                        save_obj(onetime_data_dic[onefunc_dic[key]], write_dic[key])
+                    else:
+                        f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
+                        np.savetxt(f, onetime_data_dic[onefunc_dic[key]])
 
 
-traj = LammpsH5MD.LammpsH5MD()    # create LammpsH5MD class
-traj.load(finname)     # load the trajectory
-
-# do the calculation
-# two-time quantity calculation
-if twotime_flag == 1:
-    twotime_data_dic = traj.cal_twotime(twofunc_dic.values(), screen_info=args.screen_info, **twotime_kwargs)
-    twotime_output_name_lst = []
-    for key in twofunc_dic.keys():
-        twotime_output_name_lst.append(write_dic[key])
-    for key in write_dic:
-        if func_name_lookup[key] in twotime_func_name_lst:
-            with open(write_dic[key], 'w') as f:
-                if '.npy' in write_dic[key]:
-                    raise ValueError('.npy format is not supported when computing two-time quantity.\n')
-                elif '.pkl' in write_dic[key]:
-                    save_obj(twotime_data_dic[twofunc_dic[key]], write_dic[key])
-                else:
-                    f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
-                    f.write('t0 t1 {}\n'.format(func_name_lookup[key]))
-                    np.savetxt(f, twotime_data_dic[twofunc_dic[key]], delimiter=' ')
-
-
-# one-time quantity calculation
-if onetime_flag == 1:
-    onetime_data_dic = traj.cal_onetime(onefunc_dic.values(), screen_info=args.screen_info, **onetime_kwargs)
-    onetime_output_name_lst = []
-    for key in onefunc_dic.keys():
-        onetime_output_name_lst.append(write_dic[key])
-    for key in write_dic:
-        if func_name_lookup[key] in onetime_func_name_lst:
-            with open(write_dic[key], 'w') as f:
-                if '.npy' in write_dic[key]:
-                    np.save(f, onetime_data_dic[onefunc_dic[key]])
-                elif '.pkl' in write_dic[key]:
-                    save_obj(onetime_data_dic[onefunc_dic[key]], write_dic[key])
-                else:
-                    f.write('File created at {}. Author: Guang Shi\n'.format(datetime.date.today()))
-                    np.savetxt(f, onetime_data_dic[onefunc_dic[key]])
+if __name__ == '__main__':
+    main()

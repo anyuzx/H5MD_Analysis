@@ -21,12 +21,12 @@ def compute_gyration_tensor(np.ndarray[DTYPE_t, ndim=2] frame):
   cdef DTYPE_t rgsquare, ksquare, shape
   index = 0
   for s in slist:
-    for i in xrange(N-s+1):
+    for i in range(N-s+1):
       xmean = np.mean(frame[i:i+s], axis=0)[0]
       ymean = np.mean(frame[i:i+s], axis=0)[1]
       zmean = np.mean(frame[i:i+s], axis=0)[2]
       rxx, ryy, rzz, rxy, rxz, ryz = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-      for k in xrange(s):
+      for k in range(s):
         rxx += (1.0/s) * (frame[i+k, 0] - xmean) * (frame[i+k, 0] - xmean)
         ryy += (1.0/s) * (frame[i+k, 1] - ymean) * (frame[i+k, 1] - ymean)
         rzz += (1.0/s) * (frame[i+k, 2] - zmean) * (frame[i+k, 2] - zmean)

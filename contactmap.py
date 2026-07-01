@@ -1,11 +1,14 @@
 import numpy as np
-from core import _contactmap as _cmap
+try:
+    from .core import _contactmap as _cmap
+except ImportError:
+    from core import _contactmap as _cmap
 
 
 # define contactmap0 function
 def contactmap0(frame_t, cutoff):
-    if frame_t.dtype == 'float64':
-        frame_t = np.float32(frame_t)
+    if frame_t.dtype == np.float64:
+        frame_t = frame_t.astype(np.float32, copy=False)
 
     return _cmap.contactmap(frame_t, cutoff)
 

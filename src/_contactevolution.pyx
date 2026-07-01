@@ -26,8 +26,8 @@ def contactmapevolution(np.ndarray[DTYPE_t, ndim=2] frame1, np.ndarray[DTYPE_t, 
 
     cdef DTYPE_t tmp1, tmp2, dsquare1, dsquare2
     cdef int i, j, k
-    for i in xrange(N1-1):
-        for j in xrange(i+1, N1):
+    for i in range(N1-1):
+        for j in range(i+1, N1):
              dsquare1 = 0.0
              dsquare2 = 0.0
              for k in range(dim1):

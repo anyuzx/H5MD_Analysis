@@ -1,7 +1,10 @@
 # this function compute the structural factor in fourier space (k-space)
 # this function use Lebedev quadrature https://en.wikipedia.org/wiki/Lebedev_quadrature
 import numpy as np
-from .core import _sk_direct
+try:
+    from .core import _sk_direct
+except ImportError:
+    from core import _sk_direct
 
 def sk0(frame_t, index1, index2, kmax, box, region=None):
     # currently region can only used to define the region along the z-dimention

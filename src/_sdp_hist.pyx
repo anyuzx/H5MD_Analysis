@@ -35,7 +35,7 @@ def sdp_hist(np.ndarray[DTYPE_t, ndim=2] frame, np.ndarray[DTYPE2_t, ndim=1] sli
     cdef DTYPE_t tmp, dsquare
     cdef int i, s, k, j, jj
     jj = 0
-    for i in xrange(N-1):
+    for i in range(N-1):
         j = 0
         for s in slist:
             if s <= N - i - 1:
@@ -62,7 +62,7 @@ def sdp_hist_square(np.ndarray[DTYPE_t, ndim=2] frame, np.ndarray[DTYPE2_t, ndim
     cdef DTYPE_t tmp, dsquare
     cdef int i, s, k, j, jj
     jj = 0
-    for i in xrange(N-1):
+    for i in range(N-1):
         j = 0
         for s in slist:
             if s <= N - i - 1:

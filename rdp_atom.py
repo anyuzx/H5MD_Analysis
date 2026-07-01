@@ -22,7 +22,7 @@ def rdp_atom0(frame_t, index):
     if compute_all:
         return radial_dist
     else:
-        index = np.array(index, dtype=np.int) - 1
+        index = np.array(index, dtype=int) - 1
         return radial_dist[index]
 
 def rdp_atom(index):

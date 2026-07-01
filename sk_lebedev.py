@@ -1,7 +1,10 @@
 # this function compute the structural factor in fourier space (k-space)
 # this function use Lebedev quadrature https://en.wikipedia.org/wiki/Lebedev_quadrature
 import numpy as np
-from .core import _sk_lebedev
+try:
+    from .core import _sk_lebedev
+except ImportError:
+    from core import _sk_lebedev
 
 def sk0(frame_t, index1, index2, kmax, kmin, dk, box):
     atom_index1 = np.array(index1, dtype=int)

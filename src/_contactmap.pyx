@@ -16,8 +16,8 @@ def contactmap(np.ndarray[DTYPE_t, ndim=2] frame, double cutoff):
     cdef np.ndarray[DTYPE2_t, ndim=2] CMAP = np.zeros((N,N), dtype=DTYPE2)
     cdef DTYPE_t tmp, dsquare
     cdef int i, j, k
-    for i in xrange(N-1):
-        for j in xrange(i+1, N):
+    for i in range(N-1):
+        for j in range(i+1, N):
              dsquare = 0.0
              for k in range(dim):
                  tmp = frame[i,k] - frame[j,k]

@@ -15,8 +15,8 @@ def distmap(np.ndarray[DTYPE_t, ndim=2] frame):
     cdef np.ndarray[DTYPE_t, ndim=2] DMAP = np.zeros((N,N), dtype=DTYPE)
     cdef DTYPE_t tmp, dsquare
     cdef int i, j, k
-    for i in xrange(N-1):
-        for j in xrange(i+1, N):
+    for i in range(N-1):
+        for j in range(i+1, N):
              dsquare = 0.0
              for k in range(dim):
                  tmp = frame[i,k] - frame[j,k]
@@ -34,8 +34,8 @@ def distmap_square(np.ndarray[DTYPE_t, ndim=2] frame):
     cdef np.ndarray[DTYPE_t, ndim=2] DMAP = np.zeros((N,N), dtype=DTYPE)
     cdef DTYPE_t tmp, dsquare
     cdef int i, j, k
-    for i in xrange(N-1):
-        for j in xrange(i+1, N):
+    for i in range(N-1):
+        for j in range(i+1, N):
              dsquare = 0.0
              for k in range(dim):
                  tmp = frame[i,k] - frame[j,k]

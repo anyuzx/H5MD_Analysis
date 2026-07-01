@@ -1,0 +1,8 @@
+numpy
+scipy
+h5py
+PyYAML
+tqdm
+Cython
+setuptools
+wheel

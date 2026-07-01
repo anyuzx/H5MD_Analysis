@@ -170,7 +170,7 @@ def isf0(frame_t1, frame_t2, wave_vector, class_number, index=None):
 
         result = []
         for atom_index in index:
-            atom_index = np.array(atom_index, dtype=np.int) - 1
+            atom_index = np.array(atom_index, dtype=int) - 1
             temp = np.inner(frame_t1[atom_index] - frame_t2[atom_index], grid[:, 0:3])
             temp = np.sum(np.cos(wave_vector * temp) * grid[:, -1], axis=1) # multiply by weight
             result.append(np.mean(temp))

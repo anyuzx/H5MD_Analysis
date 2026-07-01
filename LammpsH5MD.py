@@ -13,8 +13,8 @@ __all__ = ['LammpsH5MD']
 # DEFINE OPTIMAL ROTATION FUNCTION
 def optimal_rotate(P,Q):
     # P and Q are two sets of vectors
-    P = np.matrix(P)
-    Q = np.matrix(Q)
+    P = np.asarray(P)
+    Q = np.asarray(Q)
 
     assert P.shape == Q.shape
 
@@ -24,7 +24,7 @@ def optimal_rotate(P,Q):
     Q = Q - np.mean(Q,axis=0)
 
     # calculate covariance matrix A = (P^T)Q
-    A = P.T * Q
+    A = P.T @ Q
 
     # SVD for matrix A
     V, S, Wt = np.linalg.svd(A)
@@ -37,9 +37,9 @@ def optimal_rotate(P,Q):
         V[:,-1] = -V[:,-1]
 
     # calculate the final rotation matrix U
-    U = V * Wt
+    U = V @ Wt
 
-    return np.array(P * U + Qc)
+    return P @ U + Qc
 # =====================================================================
 
 # =====================================================================

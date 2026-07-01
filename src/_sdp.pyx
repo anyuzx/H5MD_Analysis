@@ -26,8 +26,8 @@ def sdp(np.ndarray[DTYPE_t, ndim=2] frame):
     cdef np.ndarray[DTYPE_t, ndim=2] sdp = np.zeros((N-1,2), dtype=DTYPE)
     cdef DTYPE_t tmp, dsquare
     cdef int i,j,k
-    for i in xrange(N-1):
-        for j in xrange(i+1, N):
+    for i in range(N-1):
+        for j in range(i+1, N):
              dsquare = 0.0
              for k in range(dim):
                  tmp = frame[i,k] - frame[j,k]
@@ -35,7 +35,7 @@ def sdp(np.ndarray[DTYPE_t, ndim=2] frame):
              sdp[j-i-1,1] += dsquare/(N-(j-i))
 
     tmp = 1.0
-    for i in xrange(N-1):
+    for i in range(N-1):
         sdp[i,0] = tmp
         sdp[i,1] = sqrt(sdp[i,1])
         tmp += 1.0
@@ -51,8 +51,8 @@ def sdpsquare(np.ndarray[DTYPE_t, ndim=2] frame):
     cdef np.ndarray[DTYPE_t, ndim=2] sdp_square = np.zeros((N-1,2), dtype=DTYPE)
     cdef DTYPE_t tmp, dsquare
     cdef int i,j,k
-    for i in xrange(N-1):
-        for j in xrange(i+1, N):
+    for i in range(N-1):
+        for j in range(i+1, N):
              dsquare = 0.0
              for k in range(dim):
                  tmp = frame[i,k] - frame[j,k]
@@ -60,7 +60,7 @@ def sdpsquare(np.ndarray[DTYPE_t, ndim=2] frame):
              sdp_square[j-i-1,1] += dsquare/(N-(j-i))
 
     tmp = 1.0
-    for i in xrange(N-1):
+    for i in range(N-1):
         sdp_square[i,0] = tmp
         sdp_square[i,1] = sdp_square[i,1]
         tmp += 1.0

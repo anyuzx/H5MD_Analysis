@@ -65,7 +65,7 @@ def compute_loop_orientation(np.ndarray[DTYPE_t, ndim=2] frame):
   cdef int loop_start, loop_end, loop_size
   cdef DTYPE_t xmean, ymean, zmean, rxx, ryy, rzz, rxy, rxz, ryz
 
-  for i in xrange(n_loop):
+  for i in range(n_loop):
     loop_start = loop_list[i][0] - 1
     loop_end = loop_list[i][1] - 1
     loop_size = loop_list[i][1] - loop_list[i][0] + 1
@@ -73,7 +73,7 @@ def compute_loop_orientation(np.ndarray[DTYPE_t, ndim=2] frame):
     ymean = np.mean(frame[loop_start:loop_end+1], axis=0)[1]
     zmean = np.mean(frame[loop_start:loop_end+1], axis=0)[2]
     rxx, ryy, rzz, rxy, rxz, ryz = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-    for k in xrange(loop_size - 1):
+    for k in range(loop_size - 1):
       rxx += (1.0/loop_size) * (frame[k+loop_start,0] - xmean) * (frame[k+loop_start,0] - xmean)
       ryy += (1.0/loop_size) * (frame[k+loop_start,1] - ymean) * (frame[k+loop_start,1] - ymean)
       rzz += (1.0/loop_size) * (frame[k+loop_start,2] - zmean) * (frame[k+loop_start,2] - zmean)
