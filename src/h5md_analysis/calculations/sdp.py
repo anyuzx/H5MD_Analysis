@@ -1,8 +1,5 @@
 import numpy as np
-try:
-    from .core import _sdp as _sdp
-except ImportError:
-    from core import _sdp as _sdp
+from .._core import _sdp as _sdp
 
 # define subchain distance profile
 def sdp(frame_t):

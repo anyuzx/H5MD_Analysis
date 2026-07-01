@@ -4,12 +4,14 @@ This repo contains exploratory Python/Cython analysis code for LAMMPS H5MD
 trajectory files.
 
 Main entry points:
-- `LammpsH5MD.py` reads H5MD files and runs one-time or two-time calculations.
-- `AnalysisTool.py` parses YAML-style parameter files and writes requested
-  outputs.
-- Top-level modules such as `msd.py`, `isf.py`, `rdf.py`, and `contactmap.py`
-  define calculation functions.
-- `src/*.pyx` contains Cython kernels built through `setup.py`.
+- `src/h5md_analysis/trajectory.py` reads H5MD files and runs one-time or
+  two-time calculations.
+- `src/h5md_analysis/analysis_tool.py` backs the `h5md-analysis` console
+  command.
+- `src/h5md_analysis/calculations/` contains observable functions such as MSD,
+  ISF, RDF, contact maps, and gyration metrics.
+- `src/h5md_analysis/_core/*.pyx` contains Cython kernels built through
+  `setup.py`.
 
 ## Coding Style
 

@@ -1,8 +1,5 @@
 import numpy as np
-try:
-    from .core import _sdp_hist as _sdp_hist
-except ImportError:
-    from core import _sdp_hist as _sdp_hist
+from .._core import _sdp_hist as _sdp_hist
 
 
 # define sdphist0 function

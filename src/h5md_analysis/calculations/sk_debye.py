@@ -5,12 +5,8 @@
 # S_{ab}(k) = (1/(N_a + N_b)) * \sum_{i=1}^{N_a}\sum_{j=1}^{N_b}Sin(k r_ij) / (k r_ij)
 # this module is able to compute S(k) for non-periodic or periodic boundary condition
 import numpy as np
-try:
-    from .core import _pdist_pbc
-    from .core import _sk_debye
-except ImportError:
-    from core import _pdist_pbc
-    from core import _sk_debye
+from .._core import _pdist_pbc
+from .._core import _sk_debye
 
 def sk0_debye(frame_t, index1, index2, kmax, dk, box, kmin=0.0):
     # get number of atoms

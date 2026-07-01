@@ -1,8 +1,5 @@
 import numpy as np
-try:
-    from .core import _contactmap as _cmap
-except ImportError:
-    from core import _contactmap as _cmap
+from .._core import _contactmap as _cmap
 
 
 # define contactmap0 function

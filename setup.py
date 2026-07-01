@@ -1,60 +1,55 @@
-from setuptools import setup, Extension
-from Cython.Build import cythonize
+from pathlib import Path
+
 import numpy
+from Cython.Build import cythonize
+from setuptools import Extension, setup
 
 
+CORE_DIR = Path('src/h5md_analysis/_core')
 numpy_include = numpy.get_include()
 
-ext_modules = [Extension('core._contactmap', ['src/_contactmap.pyx'], include_dirs = [numpy_include]),
-               Extension('core._sdp',['src/_sdp.pyx'], include_dirs = [numpy_include]),
-               Extension('core._sdp_hist',['src/_sdp_hist.pyx'], include_dirs = [numpy_include]),
-               Extension('core._sdp_hist_region',['src/_sdp_hist_region.pyx'], include_dirs = [numpy_include]),
-               Extension('core._ps',['src/_ps.pyx'], include_dirs = [numpy_include]),
-               Extension('core._distmap',['src/_distmap.pyx'], include_dirs = [numpy_include]),
-               Extension('core._contactevolution',['src/_contactevolution.pyx'],include_dirs = [numpy_include]),
-               Extension('core._loop_gyration_tensor',['src/_loop_gyration_tensor.pyx'],include_dirs = [numpy_include]),
-               Extension('core._type_gyration_tensor',['src/_type_gyration_tensor.pyx'],include_dirs = [numpy_include]),
-               Extension('core._gyration_tensor', ['src/_gyration_tensor.pyx'], include_dirs = [numpy_include]),\
-               Extension('core._loop_orientation', ['src/_loop_orientation.pyx'], include_dirs = [numpy_include]),\
-               Extension(name="core._pdist_pbc",
-                sources=["src/_pdist_pbc.pyx"],
-                library_dirs=['/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/'],
-                include_dirs=['/usr/include/'],
-                extra_compile_args=['-O3', '-ffast-math', '-fopenmp'],
-                extra_link_args=['-fopenmp']),\
-               Extension(name="core._sk_debye",
-                sources=["src/_sk_debye.pyx"],
-                library_dirs=['/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/'],
-                include_dirs=['/usr/include/', numpy_include],
-                extra_compile_args=['-O3', '-ffast-math', '-fopenmp'],
-                extra_link_args=['-fopenmp'],
-                language='c++'),\
-              Extension(name="core._sk_lebedev",
-                sources=["src/_sk_lebedev.pyx"],
-                library_dirs=['/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/'],
-                include_dirs=['/usr/include/', numpy_include],
-                extra_compile_args=['-O3', '-ffast-math', '-fopenmp'],
-                extra_link_args=['-fopenmp'],
-                language='c++'),\
-              Extension(name="core._sk_direct",
-                sources=["src/_sk_direct.pyx"],
-                library_dirs=['/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/'],
-                include_dirs=['/usr/include/', numpy_include],
-                extra_compile_args=['-O3', '-ffast-math', '-fopenmp'],
-                extra_link_args=['-fopenmp'],
-                language='c++'),\
-              Extension(name="core._rdf",
-                sources=["src/_rdf.pyx"],
-                library_dirs=['/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/'],
-                include_dirs=['/usr/include/', numpy_include],
-                extra_compile_args=['-O3', '-ffast-math', '-fopenmp'],
-                extra_link_args=['-fopenmp'],
-                language='c++')
-  ]
+
+def core_extension(name, source, *, include_numpy=True, language=None, openmp=False):
+    include_dirs = []
+    if include_numpy:
+        include_dirs.append(numpy_include)
+    if openmp:
+        include_dirs.append('/usr/include/')
+
+    return Extension(
+        f'h5md_analysis._core.{name}',
+        [str(CORE_DIR / source)],
+        include_dirs=include_dirs,
+        library_dirs=['/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/'] if openmp else [],
+        extra_compile_args=['-O3', '-ffast-math', '-fopenmp'] if openmp else [],
+        extra_link_args=['-fopenmp'] if openmp else [],
+        language=language,
+    )
+
+
+ext_modules = [
+    core_extension('_contactmap', '_contactmap.pyx'),
+    core_extension('_sdp', '_sdp.pyx'),
+    core_extension('_sdp_hist', '_sdp_hist.pyx'),
+    core_extension('_sdp_hist_region', '_sdp_hist_region.pyx'),
+    core_extension('_ps', '_ps.pyx'),
+    core_extension('_distmap', '_distmap.pyx'),
+    core_extension('_contactevolution', '_contactevolution.pyx'),
+    core_extension('_loop_gyration_tensor', '_loop_gyration_tensor.pyx'),
+    core_extension('_type_gyration_tensor', '_type_gyration_tensor.pyx'),
+    core_extension('_gyration_tensor', '_gyration_tensor.pyx'),
+    core_extension('_loop_orientation', '_loop_orientation.pyx'),
+    core_extension('_pdist_pbc', '_pdist_pbc.pyx', include_numpy=False, openmp=True),
+    core_extension('_sk_debye', '_sk_debye.pyx', language='c++', openmp=True),
+    core_extension('_sk_lebedev', '_sk_lebedev.pyx', language='c++', openmp=True),
+    core_extension('_sk_direct', '_sk_direct.pyx', language='c++', openmp=True),
+    core_extension('_rdf', '_rdf.pyx', language='c++', openmp=True),
+]
+
 
 setup(
-  ext_modules = cythonize(
-    ext_modules,
-    compiler_directives={'language_level': '3'},
-  ),
+    ext_modules=cythonize(
+        ext_modules,
+        compiler_directives={'language_level': '3'},
+    ),
 )

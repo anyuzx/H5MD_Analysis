@@ -1,8 +1,5 @@
 import numpy as np
-try:
-    from .core import _contactevolution as _cmapevolution
-except ImportError:
-    from core import _contactevolution as _cmapevolution
+from .._core import _contactevolution as _cmapevolution
 
 def contactevolution0(frame_t1, frame_t2, cutoff):
     if frame_t1.dtype == np.float64:

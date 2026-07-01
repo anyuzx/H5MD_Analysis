@@ -1,0 +1,31 @@
+[build-system]
+requires = [
+    "setuptools",
+    "wheel",
+    "Cython",
+    "numpy",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "h5md-analysis"
+version = "0.1.0"
+description = "Exploratory analysis tools for LAMMPS H5MD trajectory files."
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "numpy",
+    "scipy",
+    "h5py",
+    "PyYAML",
+    "tqdm",
+]
+
+[project.scripts]
+h5md-analysis = "h5md_analysis.analysis_tool:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"h5md_analysis._core" = ["*.pyx"]

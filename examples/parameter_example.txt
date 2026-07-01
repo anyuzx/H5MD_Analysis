@@ -7,11 +7,12 @@ COMPUTE:
             class_number: 26
     - msd.g1:
         id: 2
+        args: {}
     - cmap:
         id: 3
         args:
            cutoff: 2.0
-    - sdp_hist_square.sdphistsquare:
+    - sdp_hist_square:
         id: 4
         args:
            slist: [1,10,50]
@@ -30,8 +31,7 @@ ARGS_TWOTIME:
     end: Null
     align: 0
 ARGS_ONETIME:
-    t0freq: 1000
+    tfreq: 1000
     start: 0
     end: Null
     align: 0
-

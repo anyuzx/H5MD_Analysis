@@ -1,8 +1,5 @@
 import numpy as np
-try:
-    from .core import _loop_gyration_tensor as _lgt
-except ImportError:
-    from core import _loop_gyration_tensor as _lgt
+from .._core import _loop_gyration_tensor as _lgt
 
 # define loop gyration tensor function
 def loop_gyration_tensor(frame_t):

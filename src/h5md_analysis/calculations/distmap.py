@@ -1,8 +1,5 @@
 import numpy as np
-try:
-    from .core import _distmap as _dmap
-except ImportError:
-    from core import _distmap as _dmap
+from .._core import _distmap as _dmap
 
 
 # define distmap function

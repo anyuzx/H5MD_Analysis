@@ -1,8 +1,5 @@
 import numpy as np
-try:
-    from .core import _loop_orientation as _lo
-except ImportError:
-    from core import _loop_orientation as _lo
+from .._core import _loop_orientation as _lo
 
 # define loop orientation function
 def loop_orientation(frame_t):

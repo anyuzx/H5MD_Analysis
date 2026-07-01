@@ -1,8 +1,5 @@
 import numpy as np
-try:
-	from .core import _sdp_hist_region as _sdp_hist_region
-except ImportError:
-	from core import _sdp_hist_region as _sdp_hist_region
+from .._core import _sdp_hist_region as _sdp_hist_region
 
 # define 0 function
 def sdphistregion0(frame_t, radius):

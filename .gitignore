@@ -1,6 +1,11 @@
 # local emacs computer specific log files
 *.pyc
 *.c
+*.cpp
+__pycache__/
+build/
+*.egg-info/
+.pytest_cache/
 
 # Compiled source #
 ###################

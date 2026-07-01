@@ -1,47 +1,26 @@
 import numpy as np
 import argparse
-import importlib
-
-if __package__:
-    LammpsH5MD = importlib.import_module(f'{__package__}.LammpsH5MD')
-    msd = importlib.import_module(f'{__package__}.msd')
-    ree_correlation = importlib.import_module(f'{__package__}.ree_correlation')
-    isf = importlib.import_module(f'{__package__}.isf')
-    contactmap = importlib.import_module(f'{__package__}.contactmap')
-    distmap = importlib.import_module(f'{__package__}.distmap')
-    rdf = importlib.import_module(f'{__package__}.rdf')
-    rdp = importlib.import_module(f'{__package__}.rdp')
-    rdp_atom = importlib.import_module(f'{__package__}.rdp_atom')
-    sdp = importlib.import_module(f'{__package__}.sdp')
-    sdp_square = importlib.import_module(f'{__package__}.sdp_square')
-    sdp_hist_square = importlib.import_module(f'{__package__}.sdp_hist_square')
-    sdp_hist_region = importlib.import_module(f'{__package__}.sdp_hist_region')
-    ps = importlib.import_module(f'{__package__}.ps')
-    contactevolution = importlib.import_module(f'{__package__}.contactevolution')
-    loop_gyration_tensor = importlib.import_module(f'{__package__}.loop_gyration_tensor')
-    type_gyration_tensor = importlib.import_module(f'{__package__}.type_gyration_tensor')
-    gyration_tensor = importlib.import_module(f'{__package__}.gyration_tensor')
-    loop_orientation = importlib.import_module(f'{__package__}.loop_orientation')
-else:
-    import LammpsH5MD
-    import msd
-    import ree_correlation
-    import isf
-    import contactmap
-    import distmap
-    import rdf
-    import rdp
-    import rdp_atom
-    import sdp
-    import sdp_square
-    import sdp_hist_square
-    import sdp_hist_region
-    import ps
-    import contactevolution
-    import loop_gyration_tensor
-    import type_gyration_tensor
-    import gyration_tensor
-    import loop_orientation
+from .trajectory import LammpsH5MD
+from .calculations import (
+    contactmap,
+    contactevolution,
+    distmap,
+    gyration_tensor,
+    isf,
+    loop_gyration_tensor,
+    loop_orientation,
+    msd,
+    ps,
+    rdf,
+    rdp,
+    rdp_atom,
+    ree_correlation,
+    sdp,
+    sdp_hist_region,
+    sdp_hist_square,
+    sdp_square,
+    type_gyration_tensor,
+)
 import sys
 import os
 import yaml
@@ -153,7 +132,7 @@ def save_obj(obj, name):
 def main():
     # parse the arguments
     # usage:
-    #   python AnalysisTool.py parameter_script.txt -q
+    #   h5md-analysis parameter_script.txt -q
     #   first argument: script parameter file.
     #   --quite(-q): not output the information on screeen
     parser = argparse.ArgumentParser(description='H5MD trajectory file analysis tool')
@@ -202,7 +181,7 @@ def main():
         twofunc_dic = parameters_result_lst[5]
         onefunc_dic = parameters_result_lst[6]
 
-    traj = LammpsH5MD.LammpsH5MD()    # create LammpsH5MD class
+    traj = LammpsH5MD()    # create LammpsH5MD class
     traj.load(finname)     # load the trajectory
 
     # do the calculation

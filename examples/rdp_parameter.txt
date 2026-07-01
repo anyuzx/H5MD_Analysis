@@ -10,7 +10,7 @@ WRITE:
     - rdp.txt:
         id: 1
 ARGS_ONETIME:
-    t0freq: 10
+    tfreq: 10
     start: 3000
     end: Null
     align: 0

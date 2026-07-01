@@ -1,8 +1,5 @@
 import numpy as np
-try:
-    from .core import _ps as _ps
-except ImportError:
-    from core import _ps as _ps
+from .._core import _ps as _ps
 
 # define ps0 function
 def ps0(frame_t, cutoff):
