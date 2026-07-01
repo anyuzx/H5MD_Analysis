@@ -18,13 +18,22 @@ def g10(frame_t1, frame_t2, index=None):
 
         result = []
         for atom_index in index:
-            atom_index = np.array(atom_index, dtype=np.int) - 1
+            atom_index = np.array(atom_index, dtype=np.int_) - 1
             temp = np.sum(np.mean(np.power(frame_t1[atom_index] - frame_t2[atom_index], 2), axis=0))
             result.append(temp)
         return np.array(result)
 
 def g1(index=None):
     return lambda frame_t1, frame_t2: g10(frame_t1, frame_t2, index)
+
+def g10_mean(frame_t1, frame_t2, index=None):
+    if index is None:
+        return np.sum(np.mean(np.power(frame_t1, frame_t2, 2), axis=0))
+    else:
+        return np.sum(np.mean(np.power(frame_t1[index] - frame_t2[index], 2), axis=0))
+
+def g1_mean(index=None):
+    return lambda frame_t1, frame_t2: g10_mean(frame_t1, frame_t2, index)
 
 def g20(frame_t1, frame_t2, index=None):
     com_t1 = np.mean(frame_t1, axis=0)
@@ -40,7 +49,7 @@ def g20(frame_t1, frame_t2, index=None):
 
         result = []
         for atom_index in index:
-            atom_index = np.array(atom_index, dtype=np.int) - 1
+            atom_index = np.array(atom_index, dtype=np.int_) - 1
             temp = np.sum(np.mean(np.power(frame_t1_com[atom_index] - frame_t2_com[atom_index], 2), axis=0))
             result.append(temp)
         return np.array(result)
